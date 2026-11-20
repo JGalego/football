@@ -517,7 +517,7 @@ def _():
 def _():
     # Only the pre-rendered static copy of the lite edition (built with FOOTBALL_STATIC=1) shows this; the interactive builds show nothing.
     mo.callout(mo.md(
-        "**Fast static copy.** Charts and the animation are pre-rendered so this page opens instantly, but sliders, dropdowns and players are frozen. "
+        "**Fast static copy.** Charts are pre-rendered so this page opens instantly, but sliders, dropdowns and players are frozen. "
         "[Open the interactive version](live/index.html) (it downloads Python into your browser and takes a minute or two to start)."),
         kind="neutral") if STATIC else None
     return
@@ -525,155 +525,100 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    # The intro replay. Full edition: the first home goal of Metrica's sample game (8', #10), replayed from the tracking data in real time:
-    # all 22 players and the ball, 5 positions a second, as recorded. Lite edition (no tracking data may be published): an illustrative move.
-    # Pure CSS/SVG, no scripts, so it also runs in static exports; `prefers-reduced-motion` gets the finished frame.
-    _video = None  # optional embeddable URL of footage to show beside the replay (there is none for the anonymised Metrica game)
-    _LEAD, _HOLD = 0.8, 5.0  # seconds before the action starts / after the goal
-
-    def _poly(seg):
-        return "M" + " L".join(f"{x:.2f} {y:.2f}" for x, y in seg)
-
-    _tracking = FULL and has_file("tracking_g2_5hz.csv.gz") and has_file("tracking_g2_events.csv")
-    if _tracking:
-        _trk = read_csv("tracking_g2_5hz.csv.gz")
-        _ev = read_csv("tracking_g2_events.csv")
-        _goal = _ev[(_ev.type == "SHOT") & _ev.subtype.str.contains("GOAL", na=False) & (_ev.team == "Home")].iloc[0]
-        _f = int(_goal.start_frame)
-        _seq = _trk[(_trk.frame >= _f - 25 * 12) & (_trk.frame <= _f + 25 * 3)].reset_index(drop=True)  # 12 s before the shot, 3 s after
-        _n = len(_seq)
-        _dt = float(_seq.time.diff().median())  # seconds between rows (0.2)
-        _shot_k = int((_seq.frame - _f).abs().idxmin())
-        _cross_k = next((k for k in range(_shot_k, _n) if _seq.ball_x[k] >= 105), min(_shot_k + 5, _n - 1))  # the ball crosses the goal line
-        _T = _LEAD + (_n - 1) * _dt + _HOLD
-        _pct = [(_LEAD + k * _dt) / _T * 100 for k in range(_n)]
-        _P = _pct[_cross_k]
-        _scorer = "H" + str(_goal["from"]).replace("Player", "")
-        _caption = f"Metrica Sports sample game · {int(_goal.start_time // 60)}′ · home goal by #{_scorer[1:]}"
-        _view = "-3 -3 114 74"
-        _gx, _gy = 105.0, 34.0
-        _goal_at = (52.5, 63)
-
-        def _kf(name, xs, ys, vis=None, spin=False):
-            def stop(k):
-                if spin:
-                    return f"transform:rotate({xs[k]:.0f}deg)"
-                return f"transform:translate({xs[k]:.2f}px,{68 - ys[k]:.2f}px)" + (f";opacity:{1 if vis[k] else 0}" if vis is not None else "")
-            return f"@keyframes {name}{{0%{{{stop(0)}}}" + "".join(f"{_pct[k]:.3f}%{{{stop(k)}}}" for k in range(_n)) + f"100%{{{stop(_n - 1)}}}}}"
-
-        _kfs, _stage, _k = "", "", 0
-        for _col, _ids, _fill in (("H", [c[:-2] for c in _seq.columns if c.startswith("H") and c.endswith("_x")], C["blue"]),
-                                   ("A", [c[:-2] for c in _seq.columns if c.startswith("A") and c.endswith("_x")], C["orange"])):
-            for _pid in _ids:
-                _ok = _seq[f"{_pid}_x"].notna()
-                if _ok.sum() < 3:
-                    continue
-                _xs, _ys = _seq[f"{_pid}_x"].ffill().bfill().tolist(), _seq[f"{_pid}_y"].ffill().bfill().tolist()
-                _kfs += _kf(f"kb-p{_k}", _xs, _ys, vis=_ok.tolist())
-                _ring = f"<circle r='2' fill='none' stroke='{C['ink']}' stroke-width='.35'/>" if _pid == _scorer else ""
-                _stage += (f"<g class='kb-p' style='animation-name:kb-p{_k}' transform='translate({_xs[-1]:.2f} {68 - _ys[-1]:.2f})' opacity='{1 if _ok.iloc[-1] else 0}'>"
-                           f"{_ring}<circle r='1.35' fill='{_fill}' stroke='{C['fill']}' stroke-width='.3'/><text class='kb-num' y='.55' text-anchor='middle'>{_pid[1:]}</text></g>")
-                _k += 1
-        _bx, _by = _seq.ball_x.ffill().bfill().tolist(), _seq.ball_y.ffill().bfill().tolist()
-        _run = [0.0]
-        for _j in range(1, _n):
-            _run.append(_run[-1] + math.dist((_bx[_j - 1], _by[_j - 1]), (_bx[_j], _by[_j])) / 8.2 * 360)  # ball turns as it travels
-        _kfs += _kf("kb-ball", _bx, _by) + _kf("kb-spin", _run, _run, spin=True)
-        _stage += (f"<g class='kb-ball' transform='translate({_bx[-1]:.2f} {68 - _by[-1]:.2f})'><g class='kb-spin'><g transform='scale(.105)'>%%BALL%%</g></g></g>")
-        _stage_css = (".kb .kb-p{animation-timing-function:linear;animation-duration:%%T%%s;animation-iteration-count:infinite}"
-                      ".kb .kb-ball{animation:kb-ball %%T%%s linear infinite}.kb .kb-spin{transform-box:fill-box;transform-origin:center;animation:kb-spin %%T%%s linear infinite}"
-                      ".kb .kb-all{animation:kb-fade %%T%%s infinite}")
-        _stage = "<g class='kb-all'>" + _stage + "</g>"
-        _reduced = ".kb .kb-bit{display:none}.kb .kb-goal{opacity:1;transform:rotate(-3deg)}"
-    else:  # illustrative move in the same coordinates (metres on a 105 x 68 pitch)
-        _nodes = [(25, 52), (42, 30), (58, 50), (78, 26), (97, 40), (105, 33.5)]
-        _legs = [2, 2, 2, 2, 0.8]
-        _caption = "An illustrative move. The full edition replays a real goal from the tracking data."
-        _dist = [math.dist(a, b) for a, b in zip(_nodes, _nodes[1:])]
-        _frac = [0.0]
-        for _d in _dist:
-            _frac.append(_frac[-1] + _d / sum(_dist))
-        _secs = [_LEAD]
-        for _l in _legs:
-            _secs.append(_secs[-1] + _l * 1.25)
-        _T = _secs[-1] + _HOLD
-        _pct = [s_ / _T * 100 for s_ in _secs]
-        _P = _pct[-1]
-        _last = len(_nodes) - 1
-        _route = _poly(_nodes)
-        _ease = ["ease-in-out"] * (_last - 1) + ["cubic-bezier(.5,0,.9,.6)"]
-
-        def _kf(name, prop, values):
-            steps = "".join(f"{_pct[i]:.3f}%{{{prop}:{values[i]};animation-timing-function:{_ease[i]}}}" for i in range(_last))
-            return f"@keyframes {name}{{0%{{{prop}:{values[0]}}}{steps}{_pct[_last]:.3f}%,100%{{{prop}:{values[_last]}}}}}"
-
-        _kfs = _kf("kb-ball", "offset-distance", [f"{f * 100:.2f}%" for f in _frac]) + _kf("kb-trail", "stroke-dashoffset", [f"{1 - f:.4f}" for f in _frac])
-        _kfs += _kf("kb-spin", "transform", [f"rotate({f * 900:.0f}deg)" for f in _frac])
-        _stage = ""
-        for _i in range(_last):  # each player appears, with a little pop, as the ball reaches them
-            _kfs += (f"@keyframes kb-n{_i}{{0%,{max(_pct[_i] - 0.8, 0):.3f}%{{opacity:0;transform:scale(.3)}}{_pct[_i]:.3f}%{{opacity:1;transform:scale(1.4)}}"
-                     f"{_pct[_i] + 2:.3f}%{{transform:scale(1)}}90%{{opacity:1}}97%,100%{{opacity:0}}}}")
-            _stage += f"<g class='kb-node' style='animation-name:kb-n{_i}'><circle cx='{_nodes[_i][0]}' cy='{_nodes[_i][1]}' r='1.35' fill='{C['blue']}'/></g>"
-        _stage = (f"<path class='kb-trail' d='{_route}' pathLength='1' fill='none' stroke='{C['blue']}' stroke-width='.5' stroke-linecap='round' stroke-linejoin='round' opacity='.75'/>"
-                  + _stage + "<g class='kb-ball'><g class='kb-spin'><g transform='scale(.105)'>%%BALL%%</g></g></g>")
-        _gx, _gy = _nodes[-1]
-        _view = "-3 -3 114 74"
-        _goal_at = (52.5, 63)
-        _kfs = _kfs.replace("%%ROUTE%%", _route)
-        _stage_css = (".kb .kb-ball{offset-path:path('" + _route + "');offset-rotate:0deg;offset-distance:0%;animation:kb-ball %%T%%s infinite}"
-                      ".kb .kb-spin{transform-box:fill-box;transform-origin:center;animation:kb-spin %%T%%s infinite}"
-                      ".kb .kb-trail{stroke-dasharray:1;stroke-dashoffset:1;animation:kb-trail %%T%%s infinite,kb-fade %%T%%s infinite}"
-                      ".kb .kb-node{opacity:0;transform-box:fill-box;transform-origin:center;animation-duration:%%T%%s;animation-iteration-count:infinite}")
-        _reduced = ".kb .kb-ball{offset-distance:100%}.kb .kb-trail{stroke-dashoffset:0}.kb .kb-node,.kb .kb-goal{opacity:1}.kb .kb-goal{transform:rotate(-3deg)}.kb .kb-bit{display:none}"
-
-    _ball = ("<circle r='12' fill='#fff' stroke='#111' stroke-width='1.8'/><polygon points='0,-5.5 5.2,-1.7 3.2,4.5 -3.2,4.5 -5.2,-1.7' fill='#111'/>"
-             "<g stroke='#111' stroke-width='1.4' stroke-linecap='round'><line x1='0' y1='-5.5' x2='0' y2='-11'/><line x1='5.2' y1='-1.7' x2='10.4' y2='-3.4'/>"
-             "<line x1='3.2' y1='4.5' x2='6.4' y2='9'/><line x1='-3.2' y1='4.5' x2='-6.4' y2='9'/><line x1='-5.2' y1='-1.7' x2='-10.4' y2='-3.4'/></g>")
-    _bits = "".join(
-        f"<circle class='kb-bit' style='--dx:{dx}px;--dy:{dy}px;fill:{col}' cx='{_gx:.2f}' cy='{_gy:.2f}' r='.55'/>"
-        for (dx, dy), col in zip([(-9, -9), (-4, -12), (3, -10), (-12, -3), (-11, 4), (-5, 10), (1, 11), (-14, 8)],
-                                 [C["blue"], C["orange"], C["yellow"], C["aqua"], C["magenta"], C["violet"], C["blue"], C["orange"]]))
-    _css = """
-    .kb{margin:6px 0 2px}
-    .kb svg{display:block;width:100%;height:auto;overflow:visible}
-    .kb text{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:2.7px;font-weight:600;fill:%%INK%%;stroke:%%FILL%%;stroke-width:.8px;paint-order:stroke}
-    .kb .kb-num{font-size:1.55px;font-weight:700;fill:#fff;stroke:none}
-    %%STAGE%%
-    .kb .kb-net{transform-box:fill-box;transform-origin:left center;animation:kb-bulge %%T%%s infinite}
-    .kb .kb-goal{opacity:0;transform-box:fill-box;transform-origin:center;animation:kb-pop %%T%%s infinite}
-    .kb .kb-goal-text{font-family:Georgia,serif;font-size:10px;font-weight:700;stroke-width:1.1px}
-    .kb .kb-bit{opacity:0;animation:kb-burst %%T%%s infinite}
-    %%KF%%
-    @keyframes kb-fade{0%{opacity:0}2%,90%{opacity:1}97%,100%{opacity:0}}
-    @keyframes kb-bulge{0%,%%P1%%%{transform:scaleX(1)}%%P2%%%{transform:scaleX(1.7)}%%P3%%%,100%{transform:scaleX(1)}}
-    @keyframes kb-pop{0%,%%P%%%{opacity:0;transform:scale(.4) rotate(-6deg)}%%P4%%%{opacity:1;transform:scale(1.18) rotate(-3deg)}%%P5%%%,92%{opacity:1;transform:scale(1) rotate(-3deg)}97%,100%{opacity:0;transform:scale(1) rotate(-3deg)}}
-    @keyframes kb-burst{0%,%%P%%%{opacity:0;transform:translate(0,0)}%%P6%%%{opacity:1}%%P7%%%{opacity:0;transform:translate(var(--dx),var(--dy))}100%{opacity:0}}
-    @media (prefers-reduced-motion:reduce){.kb *{animation:none!important}%%REDUCED%%}
+    # A wall of football GIFs from GIPHY: goals, saves, tackles, skills, set pieces, cards, trophies, crowds, the women's game.
+    # Each tile is Giphy's own small animated "preview" rendition (12-49 KB), loaded lazily as it scrolls into view, and links to the clip on GIPHY.
+    # Needs no data and no kernel work, so it also appears instantly on the static page. `prefers-reduced-motion` gets a still frame instead.
+    _N, _M = 6, 8  # rows x columns of the wall (at most as many tiles as there are clips below)
+    _clips = [
+        ("3o7bu2D938PkrKrcYw", "Goal celebration"),
+        ("noV8SksgLVNJK", "Save"),
+        ("3oEduHRlWsv3k4A48w", "Tackle"),
+        ("SMearnvJ1ghbdXpkzC", "Dribble"),
+        ("j5LM22Mtjcfs4ZdCBo", "Skills"),
+        ("9rgeyUcLL4NusBIPQg", "Nutmeg"),
+        ("LSZQkdPUz6IgM", "Free kick"),
+        ("8A4HVoSlNAxfQ7Y4CT", "Penalty"),
+        ("THOKxpYQHaakkKsSsY", "Bicycle kick"),
+        ("26FL4BhNXmo8PNLYk", "Goal"),
+        ("xT8qBqVM3NpG1J802k", "Free kick goal"),
+        ("cRRuFyTrAezSIWz52S", "Yellow card"),
+        ("dFrGgACie2s8Ux4Ygg", "Red card"),
+        ("l46C6ESBdxfQKXEn6", "Corner kick"),
+        ("gLWTWCg96RA0btDUm0", "Trophy"),
+        ("3otPoRKgy8Urlwe9So", "Celebration"),
+        ("8Js7tAjS32CdGvjiOR", "Fans"),
+        ("4EEy1DQfXG9KEeaCQI", "Stadium"),
+        ("cnJNVjiIWcDGIMAuIe", "Women's goal"),
+        ("no6HN9ItkB79posq8o", "Women's celebration"),
+        ("Gbz7uJxsfgrPProUjj", "Women's football"),
+        ("b7hZe96PaAly4RjZZR", "Shot"),
+        ("4RALum4ThckN2", "World Cup"),
+        ("j2qJeo2Dhm7ubDKcou", "Throw-in"),
+        ("3og0IHHIBTcYxTr8qs", "Goal celebration"),
+        ("m2MaJEv0A52PcVhcaV", "Save"),
+        ("WCX1h3y8emgj9Prjem", "Tackle"),
+        ("MtI011el1MbFmQRFcs", "Dribble"),
+        ("7ckMJ2ymiJhnqS9Crd", "Skills"),
+        ("55eFoH5ZowIslGNcmH", "Nutmeg"),
+        ("Je9Wbvf3EXXTW", "Penalty"),
+        ("3FbDBpuRJuUd6VyD3E", "Bicycle kick"),
+        ("5FOsu6mtaurTKc4Fxs", "Goal"),
+        ("NGDi0TBHQ7UWaoAmr8", "Red card"),
+        ("QBMrpkBiaOX90n3rbD", "Trophy"),
+        ("kqLgJfjrD8MKC8kyZl", "Celebration"),
+        ("tqqH0G3f9tQNHwJuev", "Fans"),
+        ("5BYt33NDLURd1Oq8UN", "Stadium"),
+        ("ulxLtUzAjrakGBmEOe", "Women's goal"),
+        ("Jm9jMGt1XdA4TYaJ7i", "Women's celebration"),
+        ("DWTfFGvAg32PFP9uX5", "Throw-in"),
+        ("xUOxeYaa0VdPVX6qwU", "Goal celebration"),
+        ("KcPvmYNQL8TrNlZolu", "Save"),
+        ("QpTiFUjE9rc3Zh01ra", "Tackle"),
+        ("l3vRhE2oWFNfgPims", "Dribble"),
+        ("kttzuTIE4bDCznFNDi", "Skills"),
+        ("d9HYTEzbDO4ULqDZ8z", "Nutmeg"),
+        ("xX0bddamE2MdhFpw47", "Bicycle kick"),
+        ("tjOqm4ByG4AwM", "Goal"),
+        ("kC8x2sN2DnHlGfFNAS", "Trophy"),
+        ("kexqhPUFLtnzAd2788", "Celebration"),
+        ("sQSMIM6eniTdLkla9k", "Women's goal"),
+        ("GURjAoOV2R7N95asyN", "Women's celebration"),
+        ("vgHYAr2NFzcT3QVuLC", "Throw-in"),
+        ("xPYlrYkCu05iTkpsM2", "Goal celebration"),
+        ("mEgimsNRRuEQ1hi1xX", "Tackle"),
+        ("mHjCRi4kOMrHa", "Dribble"),
+        ("xThta0elszjqKfn1Di", "Bicycle kick"),
+        ("HwKOUD4d4918Q", "Goal"),
+        ("5Yeeg9ugcLTlC9MfVT", "Celebration"),
+        ("Oj4YFnnVGOh3jcLmIo", "Women's goal"),
+        ("waHQVqaKne0TcpNV0I", "Women's celebration"),
+        ("24okY552tjzCwuGEM0", "Bicycle kick"),
+        ("26xBR3EG96YmhwbPG", "Goal"),
+        ("l41YmrFwNJYvpOi8E", "Goal"),
+        ("xT1Ra3E0ofBiuAJXRC", "Goal"),
+        ("IeL5zvS2I1qaSzzt9W", "Goal"),
+        ("VKi4Iw5mnl3XOaaZmh", "Goal"),
+        ("iF1AybL3n0eSLagITq", "Goal"),
+        ("ggLCPifsljVFILuoUC", "Goal"),
+        ("Kh8FG9fiF8GGgG6YUO", "Goal"),
+    ]
+    _tiles = "".join(
+        f"<a class='gw-t' href='https://giphy.com/gifs/{gid}' target='_blank' rel='noopener noreferrer' title='{xml_escape(what)} · via GIPHY'>"
+        f"<picture><source media='(prefers-reduced-motion: reduce)' srcset='https://media.giphy.com/media/{gid}/200_s.gif'>"
+        f"<img src='https://media.giphy.com/media/{gid}/giphy-preview.gif' alt='Football GIF: {xml_escape(what)}' loading='lazy' decoding='async'></picture></a>"
+        for gid, what in _clips[: _N * _M])
+    _css = f"""
+    .gw-grid{{display:grid;grid-template-columns:repeat({_M},minmax(0,1fr));gap:6px;margin:6px 0 2px}}
+    .gw-t{{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:8px;background:{C['fill']};border:1px solid {C['grid']}}}
+    .gw-t img{{display:block;width:100%;height:100%;object-fit:cover;transition:transform .25s ease}}
+    .gw-t:hover img{{transform:scale(1.08)}}
+    @media (max-width:820px){{.gw-grid{{grid-template-columns:repeat({max(2, _M // 2)},minmax(0,1fr))}}}}
+    @media (max-width:480px){{.gw-grid{{grid-template-columns:repeat(2,minmax(0,1fr))}}}}
     """
-    _css = (_css.replace("%%STAGE%%", _stage_css).replace("%%REDUCED%%", _reduced).replace("%%KF%%", _kfs).replace("%%T%%", f"{_T:.2f}")
-            .replace("%%P1%%", f"{_P - 1:.2f}").replace("%%P2%%", f"{_P + 2:.2f}").replace("%%P3%%", f"{_P + 8:.2f}")
-            .replace("%%P4%%", f"{_P + 4:.2f}").replace("%%P5%%", f"{_P + 7:.2f}").replace("%%P6%%", f"{_P + .5:.2f}").replace("%%P7%%", f"{_P + 22:.2f}")
-            .replace("%%P%%", f"{_P:.2f}").replace("%%INK%%", C["ink"]).replace("%%FILL%%", C["fill"]))
-    _lines = "".join(f"<path d='{_poly(seg)}'/>" for seg in PITCH_SEGS)
-    _svg = f"""
-    <svg viewBox='{_view}' role='img' aria-label='Animated replay of a goal'>
-      <defs><pattern id='kb-netpat' width='.8' height='.8' patternUnits='userSpaceOnUse'><path d='M0 0H.8M0 0V.8' stroke='{C['axis']}' stroke-width='.1' fill='none'/></pattern></defs>
-      <rect x='-3' y='-3' width='114' height='74' rx='1.5' fill='{C['fill']}'/>
-      <g fill='none' stroke='{C['line']}' stroke-width='.22'>{_lines}</g>
-      <g class='kb-net'><rect x='105' y='30.34' width='2.6' height='7.32' fill='url(#kb-netpat)' stroke='{C['muted']}' stroke-width='.22'/></g>
-      {_stage.replace('%%BALL%%', _ball)}
-      {_bits}
-      <g class='kb-goal'><text class='kb-goal-text' x='{_goal_at[0]}' y='{_goal_at[1]}' text-anchor='middle'>GOAL!</text></g>
-    </svg>
-    """
-    _replay = mo.vstack([
-        mo.Html(f"<div class='kb'><style>{_css}</style>{_svg}</div>"),
-        mo.md(f"<span style='color:{C['muted']};font-size:0.85em'>{xml_escape(_caption)}</span>"),
+    mo.vstack([
+        mo.Html(f"<div><style>{_css}</style><div class='gw-grid'>{_tiles}</div></div>"),
+        mo.md(f"<span style='color:{C['muted']};font-size:0.85em'>GIFs via <a href='https://giphy.com' target='_blank' rel='noopener noreferrer'>GIPHY</a>. Click one to open it there.</span>"),
     ], gap=0.4)
-    _footage = mo.Html(f"<div style='position:relative;padding-top:56.25%;border-radius:8px;overflow:hidden;background:#000'>"
-                       f"<iframe src='{_video}' title='Footage of the goal' style='position:absolute;inset:0;width:100%;height:100%;border:0' "
-                       f"allow='accelerometer; encrypted-media; picture-in-picture' allowfullscreen loading='lazy'></iframe></div>") if _video else None
-    mo.hstack([_replay, _footage], widths="equal", gap=1.2, align="center") if _footage else _replay
     return
 
 
