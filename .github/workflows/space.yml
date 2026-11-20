@@ -1,6 +1,6 @@
 name: Sync to the Hugging Face Space
 
-# Pushes this repository (tracked files only: no third-party row-level data) to the Space.
+# Uploads this repository (tracked files only: no third-party row-level data) to the Space.
 # The Space's Dockerfile then downloads the data inside the image build.
 # Needs a repository secret HF_TOKEN (a Hugging Face token with write access to the Space).
 on:
@@ -13,16 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Push to the Space
+      - name: Upload to the Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_SPACE: jgalego/football
         run: |
+          # Upload the files through the Hugging Face API instead of `git push`: the Hub rejects plain-git binary files
+          # (jpg, gz, ...) and the API stores them through Xet for us. `--delete "*"` makes the Space mirror this tree.
+          pip install --quiet "huggingface_hub[hf_xet]"
           cp deploy/space/README.md README.md
-          git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
-          git add README.md
-          git commit -m "Use the Space README" || true
-          git push --force "https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" HEAD:main
+          hf upload "$HF_SPACE" . . --repo-type space \
+            --exclude ".git/*" --exclude ".github/*" \
+            --delete "*" \
+            --commit-message "Sync from GitHub ${GITHUB_SHA::7}"
