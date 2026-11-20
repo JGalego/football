@@ -525,94 +525,42 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    # A wall of football GIFs from GIPHY: goals, saves, tackles, skills, set pieces, cards, trophies, crowds, the women's game.
-    # Each tile is Giphy's own small animated "preview" rendition (12-49 KB), loaded lazily as it scrolls into view, and links to the clip on GIPHY.
-    # Needs no data and no kernel work, so it also appears instantly on the static page. `prefers-reduced-motion` gets a still frame instead.
-    _N, _M = 6, 8  # rows x columns of the wall (at most as many tiles as there are clips below)
+    # A wall of football history from GIPHY: one clip per facet of the game (a solo run, a turn, a free kick, an overhead kick, a title
+    # celebration, a saved shot, the fans, the women's game ...). Picked by hand, no repeats of the same point; labels follow Giphy's own titles.
+    # Each tile is Giphy's small animated "preview" rendition (12-49 KB), loaded lazily, and links to the clip on GIPHY. `prefers-reduced-motion`
+    # gets a still frame. No data or kernel work, so it also appears instantly on the static page.
+    _N, _M = 3, 5  # rows x columns of the wall (at most as many tiles as there are clips below)
     _clips = [
-        ("3o7bu2D938PkrKrcYw", "Goal celebration"),
-        ("noV8SksgLVNJK", "Save"),
-        ("3oEduHRlWsv3k4A48w", "Tackle"),
-        ("SMearnvJ1ghbdXpkzC", "Dribble"),
-        ("j5LM22Mtjcfs4ZdCBo", "Skills"),
-        ("9rgeyUcLL4NusBIPQg", "Nutmeg"),
-        ("LSZQkdPUz6IgM", "Free kick"),
-        ("8A4HVoSlNAxfQ7Y4CT", "Penalty"),
-        ("THOKxpYQHaakkKsSsY", "Bicycle kick"),
-        ("26FL4BhNXmo8PNLYk", "Goal"),
-        ("xT8qBqVM3NpG1J802k", "Free kick goal"),
-        ("cRRuFyTrAezSIWz52S", "Yellow card"),
-        ("dFrGgACie2s8Ux4Ygg", "Red card"),
-        ("l46C6ESBdxfQKXEn6", "Corner kick"),
-        ("gLWTWCg96RA0btDUm0", "Trophy"),
-        ("3otPoRKgy8Urlwe9So", "Celebration"),
-        ("8Js7tAjS32CdGvjiOR", "Fans"),
-        ("4EEy1DQfXG9KEeaCQI", "Stadium"),
-        ("cnJNVjiIWcDGIMAuIe", "Women's goal"),
-        ("no6HN9ItkB79posq8o", "Women's celebration"),
-        ("Gbz7uJxsfgrPProUjj", "Women's football"),
-        ("b7hZe96PaAly4RjZZR", "Shot"),
-        ("4RALum4ThckN2", "World Cup"),
-        ("j2qJeo2Dhm7ubDKcou", "Throw-in"),
-        ("3og0IHHIBTcYxTr8qs", "Goal celebration"),
-        ("m2MaJEv0A52PcVhcaV", "Save"),
-        ("WCX1h3y8emgj9Prjem", "Tackle"),
-        ("MtI011el1MbFmQRFcs", "Dribble"),
-        ("7ckMJ2ymiJhnqS9Crd", "Skills"),
-        ("55eFoH5ZowIslGNcmH", "Nutmeg"),
-        ("Je9Wbvf3EXXTW", "Penalty"),
-        ("3FbDBpuRJuUd6VyD3E", "Bicycle kick"),
-        ("5FOsu6mtaurTKc4Fxs", "Goal"),
-        ("NGDi0TBHQ7UWaoAmr8", "Red card"),
-        ("QBMrpkBiaOX90n3rbD", "Trophy"),
-        ("kqLgJfjrD8MKC8kyZl", "Celebration"),
-        ("tqqH0G3f9tQNHwJuev", "Fans"),
-        ("5BYt33NDLURd1Oq8UN", "Stadium"),
-        ("ulxLtUzAjrakGBmEOe", "Women's goal"),
-        ("Jm9jMGt1XdA4TYaJ7i", "Women's celebration"),
-        ("DWTfFGvAg32PFP9uX5", "Throw-in"),
-        ("xUOxeYaa0VdPVX6qwU", "Goal celebration"),
-        ("KcPvmYNQL8TrNlZolu", "Save"),
-        ("QpTiFUjE9rc3Zh01ra", "Tackle"),
-        ("l3vRhE2oWFNfgPims", "Dribble"),
-        ("kttzuTIE4bDCznFNDi", "Skills"),
-        ("d9HYTEzbDO4ULqDZ8z", "Nutmeg"),
-        ("xX0bddamE2MdhFpw47", "Bicycle kick"),
-        ("tjOqm4ByG4AwM", "Goal"),
-        ("kC8x2sN2DnHlGfFNAS", "Trophy"),
-        ("kexqhPUFLtnzAd2788", "Celebration"),
-        ("sQSMIM6eniTdLkla9k", "Women's goal"),
-        ("GURjAoOV2R7N95asyN", "Women's celebration"),
-        ("vgHYAr2NFzcT3QVuLC", "Throw-in"),
-        ("xPYlrYkCu05iTkpsM2", "Goal celebration"),
-        ("mEgimsNRRuEQ1hi1xX", "Tackle"),
-        ("mHjCRi4kOMrHa", "Dribble"),
-        ("xThta0elszjqKfn1Di", "Bicycle kick"),
-        ("HwKOUD4d4918Q", "Goal"),
-        ("5Yeeg9ugcLTlC9MfVT", "Celebration"),
-        ("Oj4YFnnVGOh3jcLmIo", "Women's goal"),
-        ("waHQVqaKne0TcpNV0I", "Women's celebration"),
-        ("24okY552tjzCwuGEM0", "Bicycle kick"),
-        ("26xBR3EG96YmhwbPG", "Goal"),
-        ("l41YmrFwNJYvpOi8E", "Goal"),
-        ("xT1Ra3E0ofBiuAJXRC", "Goal"),
-        ("IeL5zvS2I1qaSzzt9W", "Goal"),
-        ("VKi4Iw5mnl3XOaaZmh", "Goal"),
-        ("iF1AybL3n0eSLagITq", "Goal"),
-        ("ggLCPifsljVFILuoUC", "Goal"),
-        ("Kh8FG9fiF8GGgG6YUO", "Goal"),
+        ("dBCWoIHo1hT5Sdtqbn", "Maradona · World Cup"),
+        ("LOLLHXQqdFsovmckYm", "The Cruyff turn"),
+        ("H3B4p7StPqXsa7q5Xo", "Zidane"),
+        ("8Hxi8VpszCw5P9aokM", "Roberto Carlos, free kick"),
+        ("QBMrpkBiaOX90n3rbD", "Cafu lifts the World Cup"),
+        ("uVQN60ceUXCcsqv1xd", "Thierry Henry · Arsenal"),
+        ("24okY552tjzCwuGEM0", "Ronaldo's bicycle kick"),
+        ("SJGIKDvFojqn022kFU", "Spain, Iniesta · World Cup"),
+        ("ORjPQ0Fc43cp3hDzef", "Steven Gerrard · Champions League"),
+        ("Q5iZaB5yvxxSxjyIc1", "Zlatan · Sweden"),
+        ("l3UcicwEsOOan1Q2c", "Agüero · Manchester City"),
+        ("xT8qBcFZPJDJj8EkgM", "Iceland's fans · Euro 2016"),
+        ("sbY2KdJ5x80CF22Mno", "Messi dribbling"),
+        ("l41lPe02EuUXQ90GY", "USA · Women's World Cup"),
+        ("xUPGchvk1SVaExiT6M", "Neuer · Bayern"),
     ]
     _tiles = "".join(
-        f"<a class='gw-t' href='https://giphy.com/gifs/{gid}' target='_blank' rel='noopener noreferrer' title='{xml_escape(what)} · via GIPHY'>"
+        f"<figure class='gw-f'><a class='gw-t' href='https://giphy.com/gifs/{gid}' target='_blank' rel='noopener noreferrer' title='{xml_escape(what)} · via GIPHY'>"
         f"<picture><source media='(prefers-reduced-motion: reduce)' srcset='https://media.giphy.com/media/{gid}/200_s.gif'>"
         f"<img src='https://media.giphy.com/media/{gid}/giphy-preview.gif' alt='Football GIF: {xml_escape(what)}' loading='lazy' decoding='async'></picture></a>"
+        f"<figcaption>{xml_escape(what)}</figcaption></figure>"
         for gid, what in _clips[: _N * _M])
     _css = f"""
-    .gw-grid{{display:grid;grid-template-columns:repeat({_M},minmax(0,1fr));gap:6px;margin:6px 0 2px}}
+    .gw-grid{{display:grid;grid-template-columns:repeat({_M},minmax(0,1fr));gap:10px;margin:6px 0 2px}}
+    .gw-f{{margin:0}}
     .gw-t{{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:8px;background:{C['fill']};border:1px solid {C['grid']}}}
     .gw-t img{{display:block;width:100%;height:100%;object-fit:cover;transition:transform .25s ease}}
-    .gw-t:hover img{{transform:scale(1.08)}}
-    @media (max-width:820px){{.gw-grid{{grid-template-columns:repeat({max(2, _M // 2)},minmax(0,1fr))}}}}
+    .gw-t:hover img{{transform:scale(1.06)}}
+    .gw-f figcaption{{margin-top:4px;font-size:.72em;line-height:1.25;color:{C['muted']}}}
+    @media (max-width:820px){{.gw-grid{{grid-template-columns:repeat(3,minmax(0,1fr))}}}}
     @media (max-width:480px){{.gw-grid{{grid-template-columns:repeat(2,minmax(0,1fr))}}}}
     """
     mo.vstack([
