@@ -21,6 +21,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from _progress import Progress, human_time, line_buffered  # sibling module in scripts/
+
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 SB = RAW / "statsbomb"
@@ -233,9 +235,26 @@ def shot_features(ev: dict) -> dict:
     )
 
 
+def read_360(mid: int) -> list | None:
+    """The 360 freeze frames of a match, or None when there are none or the file is unreadable.
+
+    StatsBomb's open-data repository has at least one malformed 360 file (three-sixty/3845506.json), so a bad file must not stop the build.
+    """
+    tfile = SB / "three-sixty" / f"{mid}.json"
+    if not tfile.exists():
+        return None
+    try:
+        return json.loads(tfile.read_text())
+    except ValueError as exc:
+        print(f"  ! skipping the unreadable 360 file for match {mid}: {exc}", flush=True)
+        return None
+
+
 def prepare_statsbomb() -> None:
-    print("StatsBomb ...")
+    print("StatsBomb ...", flush=True)
     matches, teams, players, appearances, shots, frames = [], {}, {}, [], [], []
+    total = sum(len(json.loads((SB / "matches" / str(cid) / f"{sid}.json").read_text())) for (cid, sid) in COMPS if (SB / "matches" / str(cid) / f"{sid}.json").exists())
+    progress = Progress("  Parsing matches", total, every=5.0)
     actions_by_comp: dict[str, list] = defaultdict(list)
     final_id = None
 
@@ -247,8 +266,10 @@ def prepare_statsbomb() -> None:
         for m in json.loads(mfile.read_text()):
             mid = m["match_id"]
             efile, lfile = SB / "events" / f"{mid}.json", SB / "lineups" / f"{mid}.json"
+            progress.update(note=f"{label}: {m['home_team']['home_team_name']} v {m['away_team']['away_team_name']}")
             if not efile.exists() or not lfile.exists():
                 continue
+            frames360 = read_360(mid)
             gender = "women" if "Women" in m["competition"]["competition_name"] else "men"
             stage = (m.get("competition_stage") or {}).get("name")
             home, away = m["home_team"], m["away_team"]
@@ -266,7 +287,7 @@ def prepare_statsbomb() -> None:
                     away=away["away_team_name"],
                     home_score=m["home_score"],
                     away_score=m["away_score"],
-                    has360=int((SB / "three-sixty" / f"{mid}.json").exists()),
+                    has360=int(frames360 is not None),
                 )
             )
             teams[home["home_team_id"]] = (home["home_team_name"], gender)
@@ -277,9 +298,7 @@ def prepare_statsbomb() -> None:
             events = json.loads(efile.read_text())
             end_min = max(e["minute"] + e["second"] / 60 for e in events)
             matches[-1]["n_events"] = len(events)
-            tfile = SB / "three-sixty" / f"{mid}.json"
-            if tfile.exists():
-                frames360 = json.loads(tfile.read_text())
+            if frames360 is not None:
                 matches[-1]["n_360_frames"] = len(frames360)
                 matches[-1]["n_360_players"] = sum(len(f.get("freeze_frame") or []) for f in frames360)
 
@@ -375,6 +394,7 @@ def prepare_statsbomb() -> None:
         pd.DataFrame([(k, *v) for k, v in players.items()], columns=["player_id", "player", "full_name", "country"]),
         "players.csv.gz",
     )
+    print("  Writing the compact files ...", flush=True)
     write_csv(pd.DataFrame(appearances), "appearances.csv.gz")
     write_csv(pd.DataFrame(shots), "shots.csv.gz")
     write_csv(pd.DataFrame(frames), "shot_frames.csv.gz")
@@ -556,6 +576,14 @@ STAGES = {
 
 if __name__ == "__main__":
     import sys
+    import time
 
-    for stage in sys.argv[1:] or list(STAGES):
+    line_buffered()
+    todo = sys.argv[1:] or list(STAGES)
+    t_all = time.monotonic()
+    for i, stage in enumerate(todo, 1):
+        print(f"[{i}/{len(todo)}] {stage}", flush=True)
+        t0 = time.monotonic()
         STAGES[stage]()
+        print(f"[{i}/{len(todo)}] {stage} done in {human_time(time.monotonic() - t0)}", flush=True)
+    print(f"All done in {human_time(time.monotonic() - t_all)}.", flush=True)

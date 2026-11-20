@@ -10,7 +10,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 # Hugging Face runs containers as uid 1000
 RUN useradd -m -u 1000 user
 USER user
-ENV HOME=/home/user UV_LINK_MODE=copy UV_COMPILE_BYTECODE=1 PATH=/home/user/app/.venv/bin:$PATH
+ENV HOME=/home/user UV_LINK_MODE=copy UV_COMPILE_BYTECODE=1 PYTHONUNBUFFERED=1 PATH=/home/user/app/.venv/bin:$PATH
 WORKDIR /home/user/app
 
 COPY --chown=user pyproject.toml uv.lock ./
