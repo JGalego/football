@@ -548,25 +548,24 @@ def _():
         ("xUPGchvk1SVaExiT6M", "Neuer · Bayern"),
     ]
     _tiles = "".join(
-        f"<figure class='gw-f'><a class='gw-t' href='https://giphy.com/gifs/{gid}' target='_blank' rel='noopener noreferrer' title='{xml_escape(what)} · via GIPHY'>"
+        f"<figure class='gw-f'><a class='gw-t' href='https://giphy.com/gifs/{gid}' target='_blank' rel='noopener noreferrer'>"
         f"<picture><source media='(prefers-reduced-motion: reduce)' srcset='https://media.giphy.com/media/{gid}/200_s.gif'>"
         f"<img src='https://media.giphy.com/media/{gid}/giphy-preview.gif' alt='Football GIF: {xml_escape(what)}' loading='lazy' decoding='async'></picture></a>"
         f"<figcaption>{xml_escape(what)}</figcaption></figure>"
         for gid, what in _clips[: _N * _M])
     _css = f"""
-    .gw-grid{{display:grid;grid-template-columns:repeat({_M},minmax(0,1fr));gap:10px;margin:6px 0 2px}}
-    .gw-f{{margin:0}}
+    .gw-grid{{display:grid;grid-template-columns:repeat({_M},minmax(0,1fr));gap:6px;max-width:560px;margin:6px 0 2px}}
+    .gw-f{{margin:0;position:relative}}
     .gw-t{{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:8px;background:{C['fill']};border:1px solid {C['grid']}}}
     .gw-t img{{display:block;width:100%;height:100%;object-fit:cover;transition:transform .25s ease}}
     .gw-t:hover img{{transform:scale(1.06)}}
-    .gw-f figcaption{{margin-top:4px;font-size:.72em;line-height:1.25;color:{C['muted']}}}
+    .gw-f figcaption{{position:absolute;left:1px;right:1px;bottom:1px;padding:16px 5px 4px;border-radius:0 0 7px 7px;font-size:.66em;line-height:1.2;color:#fff;
+        background:linear-gradient(transparent,rgba(0,0,0,.78));opacity:0;transition:opacity .18s ease;pointer-events:none}}
+    .gw-f:hover figcaption,.gw-f:focus-within figcaption{{opacity:1}}
     @media (max-width:820px){{.gw-grid{{grid-template-columns:repeat(3,minmax(0,1fr))}}}}
     @media (max-width:480px){{.gw-grid{{grid-template-columns:repeat(2,minmax(0,1fr))}}}}
     """
-    mo.vstack([
-        mo.Html(f"<div><style>{_css}</style><div class='gw-grid'>{_tiles}</div></div>"),
-        mo.md(f"<span style='color:{C['muted']};font-size:0.85em'>GIFs via <a href='https://giphy.com' target='_blank' rel='noopener noreferrer'>GIPHY</a>. Click one to open it there.</span>"),
-    ], gap=0.4)
+    mo.Html(f"<div><style>{_css}</style><div class='gw-grid'>{_tiles}</div></div>")
     return
 
 
