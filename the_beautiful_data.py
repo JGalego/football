@@ -40,7 +40,7 @@ with app.setup(hide_code=True):
     from PIL import Image, ImageDraw
     from scipy import ndimage as ndi
     from scipy.io import wavfile
-    from scipy.signal import spectrogram
+    from scipy.signal.windows import tukey
     from scipy.spatial import ConvexHull
     from sklearn.cluster import KMeans
     from sklearn.decomposition import PCA
@@ -1674,7 +1674,12 @@ def _(CROWD, crowd_pick):
     _n = len(_x) // _win
     _chunks = _x[: _n * _win].reshape(_n, _win)
     _loud = 20 * np.log10(np.sqrt((_chunks**2).mean(1)) + 1e-9).clip(-60, None)
-    _f, _t, _S = spectrogram(_x[: _n * _win], _sr, nperseg=_win, noverlap=0, scaling="spectrum", mode="magnitude")
+    # The same numbers as scipy.signal.spectrogram(..., noverlap=0, scaling="spectrum", mode="magnitude"), computed with a plain reshape:
+    # scipy builds a virtual sliding-window view of the whole clip that is far larger than the 2 GB a 32-bit browser (Pyodide) can address.
+    _frames = _chunks - _chunks.mean(1, keepdims=True)
+    _w = tukey(_win, 0.25, sym=False)
+    _S = np.abs(np.fft.rfft(_frames * _w, axis=1)).T / _w.sum()
+    _f, _t = np.fft.rfftfreq(_win, 1 / _sr), (np.arange(_n) * _win + _win / 2) / _sr
     _keep = _f < 4000
     _bands = _S[_keep].reshape(-1, 5, _S.shape[1]).mean(1) if _keep.sum() % 5 == 0 else _S[_keep][: (_keep.sum() // 5) * 5].reshape(-1, 5, _S.shape[1]).mean(1)
     _db = (20 * np.log10(_bands + 1e-9)).clip(-90, None)
