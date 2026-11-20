@@ -1,0 +1,69 @@
+[
+ {
+  "kind": "image",
+  "title": "France vs. Japan - Women's football (London 2012 Olympics)",
+  "file_url": "https://upload.wikimedia.org/wikipedia/commons/7/79/France_vs._Japan_-_Women%27s_football.jpg",
+  "page_url": "https://commons.wikimedia.org/wiki/File:France_vs._Japan_-_Women%27s_football.jpg",
+  "license": "CC BY 2.0",
+  "author": "sachab",
+  "size_bytes": 347019,
+  "dims_or_duration": "4608x3456 original; local copy is the 1280x960 thumbnail",
+  "format": "JPEG",
+  "notes": "Mid/wide shot at Wembley, 2012-08-06: ~14 players, white kits vs dark navy kits on striped grass. Original is 4,015,945 bytes (over 3 MB), so the local file is the Commons thumbnail https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/France_vs._Japan_-_Women%27s_football.jpg/1280px-France_vs._Japan_-_Women%27s_football.jpg (347,019 bytes); original also downloaded as photo_france_japan_2012_orig.jpg. Crowd in red seats fills the top ~20%: crop it or mask to grass before clustering.",
+  "raw_name": "photo_france_japan_2012_1280.jpg",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/France_vs._Japan_-_Women%27s_football.jpg/1280px-France_vs._Japan_-_Women%27s_football.jpg"
+ },
+ {
+  "kind": "audio",
+  "title": "Chants des supporters du RCS sur l'air de Vive le vent (RC Strasbourg supporters)",
+  "file_url": "https://upload.wikimedia.org/wikipedia/commons/5/56/Chants_des_supporters_du_RCS_sur_l%27air_de_Vive_le_vent_-_Supporters_du_RC_Strasbourg.ogg",
+  "page_url": "https://commons.wikimedia.org/wiki/File:Chants_des_supporters_du_RCS_sur_l%27air_de_Vive_le_vent_-_Supporters_du_RC_Strasbourg.ogg",
+  "license": "CC BY-SA 4.0",
+  "author": "Xaviyeah",
+  "size_bytes": 548134,
+  "dims_or_duration": "37.5 s (vorbis, 44100 Hz, 2 ch)",
+  "format": "Ogg Vorbis",
+  "notes": "Strasbourg supporters singing to the tune of Jingle Bells (recorded 2017). Crowd chant with clear rhythm, good for spectrogram/onset/tempo demos.",
+  "raw_name": "audio_strasbourg_vive_le_vent.ogg"
+ },
+ {
+  "kind": "audio",
+  "title": "Dai Frosinone, vinci con la forza del Leone (Frosinone Calcio away fans)",
+  "file_url": "https://upload.wikimedia.org/wikipedia/commons/a/a3/Dai_Frosinone_Vinci_con_la_forza_del_Leone.ogg",
+  "page_url": "https://commons.wikimedia.org/wiki/File:Dai_Frosinone_Vinci_con_la_forza_del_Leone.ogg",
+  "license": "CC BY-SA 4.0",
+  "author": "Sardognunu",
+  "size_bytes": 800178,
+  "dims_or_duration": "77.0 s (vorbis, 44100 Hz, 2 ch)",
+  "format": "Ogg Vorbis",
+  "notes": "Fan chant recorded in the away end during a Frosinone Calcio match (2005). Longer clip with stadium ambience between repetitions. Alternative if a longer in-crowd recording is wanted: File:WWS_FootballAustriavs.Sweden.ogg (CC BY 4.0, 227 s, 3.1 MB, not downloaded, over the 120 s target).",
+  "raw_name": "audio_frosinone_chant.ogg"
+ },
+ {
+  "kind": "video",
+  "title": "Latvia vs Gibraltar football match, Skonto Stadium, Riga, 2026-03-31",
+  "file_url": "https://upload.wikimedia.org/wikipedia/commons/0/06/Latvia-Gibraltar_football_2026-03-31.webm",
+  "page_url": "https://commons.wikimedia.org/wiki/File:Latvia-Gibraltar_football_2026-03-31.webm",
+  "license": "CC0",
+  "author": "Mārtiņš Bruņenieks",
+  "size_bytes": 9100520,
+  "dims_or_duration": "16.9 s, 1920x1080 (av1, audio opus)",
+  "format": "WebM",
+  "notes": "Handheld phone clip from the stands, one continuous take (ffmpeg scene>0.3 finds 0 cuts): opens on fans with flags and flare smoke, pans to the goal, then to live play (red vs white kits) in smoky floodlight. Good for frame differencing / motion energy and as a no-cut negative control; camera pans give large global motion, so subtract it or compare with the newsreel. Original is AV1 (needs an AV1-capable decoder such as recent ffmpeg/PyAV); a VP9 Commons transcode was also downloaded and works: https://upload.wikimedia.org/wikipedia/commons/transcoded/0/06/Latvia-Gibraltar_football_2026-03-31.webm/Latvia-Gibraltar_football_2026-03-31.webm.480p.vp9.webm (854x480, 1,764,013 bytes, local video_latvia_gibraltar_2026.480p.vp9.webm).",
+  "raw_name": "video_latvia_gibraltar_2026.webm"
+ },
+ {
+  "kind": "video",
+  "title": "German-American Spring Cup (DVIDS 1005028)",
+  "file_url": "https://upload.wikimedia.org/wikipedia/commons/8/85/German-American_Spring_Cup_%281005028%29.webm",
+  "page_url": "https://commons.wikimedia.org/wiki/File:German-American_Spring_Cup_(1005028).webm",
+  "license": "Public domain (U.S. Army work)",
+  "author": "U.S. Army 7MSC, Lt. Col. William Wratee (via DVIDS)",
+  "size_bytes": 5272979,
+  "dims_or_duration": "48.4 s, 854x480 (480p transcode of the 1080p original)",
+  "format": "WebM (VP9)",
+  "notes": "News-style report on a friendly match, 2026-04-24: presenter, flag, line-ups, play, interview and a title card. About ten hard cuts.",
+  "raw_name": "video_spring_cup_2026.webm",
+  "download_url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/8/85/German-American_Spring_Cup_%281005028%29.webm/German-American_Spring_Cup_%281005028%29.webm.480p.vp9.webm"
+ }
+]

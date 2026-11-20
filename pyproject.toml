@@ -1,0 +1,26 @@
+[project]
+name = "football-data-ai"
+version = "0.1.0"
+description = "The Beautiful Data: An interactive field guide to the beautiful game."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "altair>=5.5",
+    "marimo>=0.25",
+    "networkx>=3.2",
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "pillow>=10",
+    "plotly>=5.20",
+    "scikit-learn>=1.4",
+    "scipy>=1.12",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "playwright==1.65.2",  # scripts/make_snapshots.py
+    "opencv-python-headless>=4.9,<5",  # scripts/fetch_player_photos.py (face-centred crops)
+]

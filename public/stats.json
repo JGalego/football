@@ -1,0 +1,12 @@
+{
+ "n_matches": 526,
+ "n_competitions": 11,
+ "n_events": 1857401,
+ "n_360_players": 15680480,
+ "n_shots": 13565,
+ "n_goals": 1564,
+ "n_intl": 50119,
+ "events_per_match": 3531.180608365019,
+ "freeze_players_per_match": 48099.63190184049,
+ "tracking_positions_per_match": 3246685
+}

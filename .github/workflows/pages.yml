@@ -1,0 +1,52 @@
+name: Deploy the lite edition to GitHub Pages
+
+# The lite edition never contains StatsBomb or Metrica data: it is built from CC0 / openly licensed files only,
+# fetched here in CI. See scripts/build_pages.py, which also refuses to publish row-level files.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      UV_NO_DEV: "1"  # Playwright is only needed for scripts/make_snapshots.py
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install dependencies
+        run: uv sync --frozen --no-dev
+      - name: Install ffmpeg (audio and video demos)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - name: Fetch open data only
+        env:
+          FOOTBALL_USER_AGENT: football-notebook/1.0 (${{ github.server_url }}/${{ github.repository }})
+        run: uv run python scripts/download_data.py --open-only
+      - name: Prepare the open files
+        run: uv run python scripts/prepare_data.py international transfermarkt media
+      - name: Build the WebAssembly site
+        run: uv run python scripts/build_pages.py --out _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

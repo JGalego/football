@@ -1,0 +1,8 @@
+.git
+.venv
+.cache
+data
+dist
+_site
+__pycache__
+__marimo__

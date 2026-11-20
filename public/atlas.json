@@ -1,0 +1,2073 @@
+[
+ {
+  "name": "Match results",
+  "activity": "Match play",
+  "modality": "Tabular",
+  "what": "Date, teams, score, competition and venue for every match since 1872.",
+  "extract": "Home advantage, team strength over time, upset rates, scoring trends by era.",
+  "build": "Elo or Poisson model predicting match outcomes.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "International football results 1872-present (CC0)",
+    "url": "https://github.com/martj42/international_results"
+   },
+   {
+    "title": "openfootball football.json",
+    "url": "https://github.com/openfootball/football.json"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Event data",
+  "activity": "Match play",
+  "modality": "Spatial & tracking",
+  "what": "Every on-ball action with x,y location, timestamp, player, body part, outcome.",
+  "extract": "Shot quality, passing styles, pressing intensity, player contributions to goals.",
+  "build": "Expected-goals model and action-value ratings (VAEP/xT).",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "StatsBomb Open Data",
+    "url": "https://github.com/statsbomb/open-data"
+   },
+   {
+    "title": "Pappalardo et al., public spatio-temporal match event dataset (Wyscout)",
+    "url": "https://doi.org/10.1038/s41597-019-0247-7"
+   },
+   {
+    "title": "socceraction (SPADL, VAEP, xT)",
+    "url": "https://github.com/ML-KULeuven/socceraction"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "360 freeze frames",
+  "activity": "Match play",
+  "modality": "Spatial & tracking",
+  "what": "Positions of all visible players at the moment of each event.",
+  "extract": "Pass options, defensive pressure, space available, receiver selection.",
+  "build": "Pass success and pass-value model using teammate/opponent positions.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "StatsBomb Open Data (360 files)",
+    "url": "https://github.com/statsbomb/open-data"
+   },
+   {
+    "title": "un-xPass (pass value with 360 data)",
+    "url": "https://github.com/ML-KULeuven/un-xPass"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Optical tracking data",
+  "activity": "Match play",
+  "modality": "Spatial & tracking",
+  "what": "x,y of all 22 players and ball at 10-25 Hz from stadium cameras.",
+  "extract": "Distances, speeds, pitch control, team shape, off-ball runs.",
+  "build": "Pitch-control map and off-ball run detector.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "Metrica Sports sample tracking data",
+    "url": "https://github.com/metrica-sports/sample-data"
+   },
+   {
+    "title": "LaurieOnTracking tutorials",
+    "url": "https://github.com/Friends-of-Tracking-Data-FoTD/LaurieOnTracking"
+   },
+   {
+    "title": "kloppy (tracking/event loader)",
+    "url": "https://github.com/PySport/kloppy"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Broadcast tracking data",
+  "activity": "Match play",
+  "modality": "Spatial & tracking",
+  "what": "Player and ball positions estimated from the TV feed, with visibility flags.",
+  "extract": "Physical and tactical metrics for leagues without in-stadium cameras.",
+  "build": "Tracking-from-video pipeline; extrapolate unseen players.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "SkillCorner open broadcast tracking data",
+    "url": "https://github.com/SkillCorner/opendata"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Skeletal (limb) tracking",
+  "activity": "Match play",
+  "modality": "3D & pose",
+  "what": "3D positions of ~20-29 body keypoints per player per frame.",
+  "extract": "Body orientation, kicking technique, limb positions for offside, injury mechanics.",
+  "build": "3D pose estimator from multi-camera match video.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "WorldPose: World Cup 3D human pose dataset (paper)",
+    "url": "https://doi.org/10.1007/978-3-031-72655-2_20"
+   },
+   {
+    "title": "WorldPose dataset page",
+    "url": "https://eth-ait.github.io/WorldPoseDataset/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Connected ball IMU",
+  "activity": "Match play",
+  "modality": "Time series & sensors",
+  "what": "500 Hz inertial sensor inside the ball: touches, spin, acceleration.",
+  "extract": "Exact kick times, ball contact for offside/handball, kick speed and spin.",
+  "build": "Touch detector synchronising ball IMU with video.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Lineups, formations and substitutions",
+  "activity": "Match play",
+  "modality": "Tabular",
+  "what": "Starting XI, positions, shirt numbers, formation and substitution minutes.",
+  "extract": "Rotation policies, formation effects, impact of substitutes, minutes played.",
+  "build": "Substitution timing recommender.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "StatsBomb Open Data (lineups)",
+    "url": "https://github.com/statsbomb/open-data"
+   },
+   {
+    "title": "worldfootballR (FBref/Transfermarkt scraper)",
+    "url": "https://github.com/JaseZiv/worldfootballR"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Passing networks",
+  "activity": "Match play",
+  "modality": "Graph",
+  "what": "Directed weighted graph of passes between players in a match.",
+  "extract": "Centrality, key connectors, team structure, vulnerability to pressing.",
+  "build": "Network-based team style clustering.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Pena & Touchette, network theory approach to football strategy",
+    "url": "https://arxiv.org/abs/1206.6904"
+   },
+   {
+    "title": "mplsoccer (pass network plots)",
+    "url": "https://github.com/andrewRowlinson/mplsoccer"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Player interaction graphs (GNN)",
+  "activity": "Match play",
+  "modality": "Graph",
+  "what": "Per-frame graph: players as nodes, positions/velocities as features.",
+  "extract": "Set-piece outcome probabilities, receiver prediction, tactical suggestions.",
+  "build": "Graph neural network corner-kick assistant (TacticAI style).",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "TacticAI (Nature Communications 2024)",
+    "url": "https://doi.org/10.1038/s41467-024-45965-x"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Team rating time series",
+  "activity": "Match play",
+  "modality": "Time series & sensors",
+  "what": "Daily Elo-style ratings of national and club teams.",
+  "extract": "Form trajectories, strength-adjusted results, title probabilities.",
+  "build": "Season simulator using rating dynamics.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "World Football Elo Ratings",
+    "url": "https://www.eloratings.net/"
+   },
+   {
+    "title": "Club Elo",
+    "url": "http://clubelo.com/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Ball 3D trajectory",
+  "activity": "Match play",
+  "modality": "3D & pose",
+  "what": "3D ball position over time from multi-camera triangulation.",
+  "extract": "Shot speed, curve, height at goal, aerial duel and cross analysis.",
+  "build": "Ball trajectory reconstruction from two broadcast views.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Goff & Carre, soccer ball lift coefficients via trajectory analysis",
+    "url": "https://doi.org/10.1088/0143-0807/31/4/007"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Tactical (wide-angle) match video",
+  "activity": "Match play",
+  "modality": "Video",
+  "what": "Whole-pitch panoramic or high-behind-goal video of matches.",
+  "extract": "Team shape, compactness, pressing triggers visible off the ball.",
+  "build": "Formation detector from wide-angle video.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "SoccerTrack v2 (full-pitch panoramic 4K matches)",
+    "url": "https://github.com/AtomScott/SoccerTrack-v2"
+   },
+   {
+    "title": "SoccerTrack v2 paper (arXiv)",
+    "url": "https://arxiv.org/abs/2508.01802"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "GPS/IMU vest data",
+  "activity": "Training & preparation",
+  "modality": "Time series & sensors",
+  "what": "10-18 Hz GNSS position plus 100 Hz accelerometer/gyro from a vest pod.",
+  "extract": "Distance, high-speed running, accelerations, PlayerLoad, sprint counts.",
+  "build": "Training-load dashboard with injury-risk flags.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "SoccerMon: soccer athlete health, performance and position dataset",
+    "url": "https://doi.org/10.1038/s41597-024-03386-x"
+   },
+   {
+    "title": "FIFA EPTS performance standard",
+    "url": "https://inside.fifa.com/innovation/standards/epts"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Session RPE training load",
+  "activity": "Training & preparation",
+  "modality": "Tabular",
+  "what": "Player-rated exertion (0-10) times session duration, daily.",
+  "extract": "Internal load, acute:chronic ratios, monotony and strain.",
+  "build": "Load-planning tool that forecasts weekly strain.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "Impellizzeri et al., RPE-based training load in soccer",
+    "url": "https://doi.org/10.1249/01.mss.0000128199.23901.2f"
+   },
+   {
+    "title": "Gabbett, training-injury prevention paradox",
+    "url": "https://doi.org/10.1136/bjsports-2015-095788"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Drill tracking (small-sided games)",
+  "activity": "Training & preparation",
+  "modality": "Spatial & tracking",
+  "what": "Positional traces of players inside training drills and pitch sizes.",
+  "extract": "Space per player, drill intensity, which drill formats reproduce match demands.",
+  "build": "Drill designer matching target physical load.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "SoccerMon (training GPS positions)",
+    "url": "https://doi.org/10.1038/s41597-024-03386-x"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Training video",
+  "activity": "Training & preparation",
+  "modality": "Video",
+  "what": "Recorded training sessions from fixed or drone cameras.",
+  "extract": "Technique repetitions, drill compliance, decision patterns in rondos.",
+  "build": "Automatic drill segmentation and rep counter.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Force plate jumps",
+  "activity": "Training & preparation",
+  "modality": "Time series & sensors",
+  "what": "1000 Hz ground reaction forces during countermovement and drop jumps.",
+  "extract": "Jump height, RSI, asymmetry, neuromuscular fatigue after matches.",
+  "build": "Readiness score from weekly jump tests.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Claudino et al., CMJ to monitor neuromuscular status (meta-analysis)",
+    "url": "https://doi.org/10.1016/j.jsams.2016.08.011"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Isokinetic and Nordic strength tests",
+  "activity": "Training & preparation",
+  "modality": "Tabular",
+  "what": "Peak torque at set speeds; eccentric hamstring force per leg.",
+  "extract": "Hamstring:quadriceps ratios, limb imbalances, return-to-play readiness.",
+  "build": "Hamstring injury-risk screen.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Croisier et al., strength imbalances and hamstring injury",
+    "url": "https://doi.org/10.1177/0363546508316764"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Eye tracking and gaze",
+  "activity": "Training & preparation",
+  "modality": "Time series & sensors",
+  "what": "Fixation location and duration from mobile eye trackers.",
+  "extract": "Visual search strategies, quiet-eye duration, anticipation in penalties.",
+  "build": "Gaze-training feedback app for goalkeepers.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Wood & Wilson, quiet-eye training for soccer penalty kicks",
+    "url": "https://doi.org/10.1007/s10339-011-0393-0"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Scanning (head turns)",
+  "activity": "Training & preparation",
+  "modality": "Video",
+  "what": "Counts of head turns before receiving the ball, from video or head IMUs.",
+  "extract": "Scanning frequency vs pass completion and forward passing.",
+  "build": "Scan-counting model from broadcast video.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Jordet et al., scanning in Premier League footballers",
+    "url": "https://doi.org/10.3389/fpsyg.2020.553813"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "EEG/fNIRS brain activity",
+  "activity": "Training & preparation",
+  "modality": "Time series & sensors",
+  "what": "Electrical or haemodynamic brain signals during kicks or decisions.",
+  "extract": "Neural markers of pressure, anxiety and motor planning.",
+  "build": "Pressure-detection classifier for penalty takers.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Slutter et al., brain activity related to missing penalty kicks (fNIRS)",
+    "url": "https://doi.org/10.3389/fcomp.2021.661466"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Cognitive test scores",
+  "activity": "Training & preparation",
+  "modality": "Tabular",
+  "what": "Executive-function and reaction-time test results (e.g. design fluency).",
+  "extract": "Links between cognition, game intelligence and playing level.",
+  "build": "Cognitive profile clustering for player development.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Vestberg et al., executive functions predict success of top soccer players",
+    "url": "https://doi.org/10.1371/journal.pone.0034731"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Kick motion capture",
+  "activity": "Training & preparation",
+  "modality": "3D & pose",
+  "what": "Marker or markerless 3D kinematics of kicking legs and trunk.",
+  "extract": "Foot speed, joint angles, ball-foot contact, technique differences.",
+  "build": "Kick-technique coach comparing to expert templates.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "SportsPose 3D sports pose dataset (incl. soccer kicks)",
+    "url": "https://github.com/ChristianIngwersen/SportsPose"
+   },
+   {
+    "title": "Lees et al., biomechanics of kicking in soccer: a review",
+    "url": "https://doi.org/10.1080/02640414.2010.481305"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Smart boot and insole sensors",
+  "activity": "Training & preparation",
+  "modality": "Time series & sensors",
+  "what": "Pressure and inertial signals from boots or insoles.",
+  "extract": "Touch counts, kick detection, foot loading and stride asymmetry.",
+  "build": "Kick and touch classifier from a foot sensor.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Soccer kick detection using a wearable sensor",
+    "url": "https://doi.org/10.1109/ictc.2016.7763408"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "VR training telemetry",
+  "activity": "Training & preparation",
+  "modality": "3D & pose",
+  "what": "Headset and controller poses and choices in virtual-reality drills.",
+  "extract": "Decision speed, head movement, heading technique without impacts.",
+  "build": "VR decision-training scenario with adaptive difficulty.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Efficacy of training soccer heading in immersive VR",
+    "url": "https://doi.org/10.1007/s10055-023-00807-x"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Heart rate and HRV",
+  "activity": "Body & health",
+  "modality": "Time series & sensors",
+  "what": "Beat-to-beat heart rate during sessions and morning HRV.",
+  "extract": "Internal load, cardiovascular fitness, autonomic recovery status.",
+  "build": "Overtraining early-warning model.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "Buchheit, monitoring training status with HR measures",
+    "url": "https://doi.org/10.3389/fphys.2014.00073"
+   },
+   {
+    "title": "SoccerMon (wellness and load)",
+    "url": "https://doi.org/10.1038/s41597-024-03386-x"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Sleep",
+  "activity": "Body & health",
+  "modality": "Time series & sensors",
+  "what": "Sleep duration, efficiency and timing from actigraphy or rings.",
+  "extract": "Recovery after night matches and travel; sleep debt.",
+  "build": "Sleep-aware recovery scheduler.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Nedelec et al., sleep hygiene and recovery in elite soccer players",
+    "url": "https://doi.org/10.1007/s40279-015-0377-9"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Wellness questionnaires",
+  "activity": "Body & health",
+  "modality": "Tabular",
+  "what": "Daily 1-5 ratings of fatigue, soreness, mood, stress, sleep quality.",
+  "extract": "Subjective readiness trends and early illness or overload signs.",
+  "build": "Daily readiness traffic-light dashboard.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "SoccerMon (subjective wellness reports)",
+    "url": "https://doi.org/10.1038/s41597-024-03386-x"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Injury records",
+  "activity": "Body & health",
+  "modality": "Tabular",
+  "what": "Injury type, location, mechanism, date and days lost.",
+  "extract": "Incidence, burden, re-injury risk, effect of congestion.",
+  "build": "Survival model for time to next injury.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Fuller et al., consensus on injury definitions in football",
+    "url": "https://doi.org/10.1136/bjsm.2005.025270"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Medical imaging (MRI)",
+  "activity": "Body & health",
+  "modality": "Image",
+  "what": "MRI and ultrasound scans of muscle, tendon and ligament injuries.",
+  "extract": "Injury grade, oedema extent, expected return-to-play time.",
+  "build": "Return-to-play estimator from MRI features.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Ekstrand et al., hamstring MRI findings and return to play",
+    "url": "https://doi.org/10.1136/bjsports-2011-090155"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Blood biomarkers",
+  "activity": "Body & health",
+  "modality": "Biological",
+  "what": "Creatine kinase, cortisol, CRP, iron, vitamin D from blood samples.",
+  "extract": "Muscle damage, inflammation and recovery time course after matches.",
+  "build": "Recovery-time predictor from post-match biomarkers.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Silva et al., acute and residual match-related fatigue (meta-analysis)",
+    "url": "https://doi.org/10.1007/s40279-017-0798-8"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Genetics",
+  "activity": "Body & health",
+  "modality": "Biological",
+  "what": "Genotypes such as ACTN3 R577X from saliva or blood.",
+  "extract": "Associations with injury incidence and power vs endurance traits (weak effects).",
+  "build": "Teaching demo on small effect sizes and ethics.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Massidda et al., ACTN3 R577X and injuries in professional football",
+    "url": "https://doi.org/10.1097/jsm.0000000000000487"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Nutrition logs",
+  "activity": "Body & health",
+  "modality": "Tabular",
+  "what": "Food diaries, photos and macronutrient intake per day.",
+  "extract": "Energy balance, carbohydrate periodisation around matches.",
+  "build": "Meal planner matched to training load.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Anderson et al., energy intake and expenditure of EPL players",
+    "url": "https://doi.org/10.1123/ijsnem.2016-0259"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Body composition (DXA)",
+  "activity": "Body & health",
+  "modality": "Biological",
+  "what": "Dual-energy X-ray scans of fat, lean and bone mass by region.",
+  "extract": "Positional physiques, seasonal changes, bone health.",
+  "build": "Body-composition trend tracker per player.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Milsom et al., DXA body composition of EPL players",
+    "url": "https://doi.org/10.1080/02640414.2015.1012101"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Sweat testing",
+  "activity": "Body & health",
+  "modality": "Biological",
+  "what": "Sweat rate and sodium concentration from patches and body mass change.",
+  "extract": "Individual fluid and salt replacement needs.",
+  "build": "Personalised hydration calculator.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Shirreffs et al., sweating response of elite players in the heat",
+    "url": "https://doi.org/10.1055/s-2004-821112"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Head impact sensors",
+  "activity": "Body & health",
+  "modality": "Time series & sensors",
+  "what": "Linear and rotational head accelerations from instrumented mouthguards.",
+  "extract": "Heading exposure, impact magnitudes, cumulative load.",
+  "build": "Heading-count limiter for youth and pros.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Custom mouthguard reduces head acceleration during heading",
+    "url": "https://doi.org/10.1016/j.ebiom.2025.105674"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Long-term neurological outcomes",
+  "activity": "Body & health",
+  "modality": "Tabular",
+  "what": "Death certificates and medical records of former players vs matched controls.",
+  "extract": "Neurodegenerative disease risk linked to heading and position.",
+  "build": "Cohort risk calculator by position and career length.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Mackay et al., neurodegenerative mortality in former soccer players",
+    "url": "https://doi.org/10.1056/nejmoa1908483"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Infrared thermography",
+  "activity": "Body & health",
+  "modality": "Image",
+  "what": "Thermal images of skin temperature over leg muscles.",
+  "extract": "Asymmetries hinting at overload or inflammation.",
+  "build": "Thermal asymmetry detector for daily screening.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Infrared thermography of lower limb muscles in elite soccer players",
+    "url": "https://doi.org/10.7717/peerj.3388"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Menstrual cycle tracking",
+  "activity": "Body & health",
+  "modality": "Biological",
+  "what": "Cycle phase, symptoms and hormonal contraceptive use in female players.",
+  "extract": "Phase effects on wellness, heart rate, perceived exertion and injury.",
+  "build": "Cycle-aware training load planner.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Menstrual cycle phases and HR, well-being, RPE in female footballers (preprint)",
+    "url": "https://doi.org/10.1101/2024.12.05.24318571"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Salivary hormones and immunity",
+  "activity": "Body & health",
+  "modality": "Biological",
+  "what": "Saliva cortisol, testosterone and immunoglobulin-A.",
+  "extract": "Stress, mucosal immunity and illness risk across congested fixtures.",
+  "build": "Illness-risk alert from saliva markers.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Salivary IgA and cortisol in elite European match-play",
+    "url": "https://doi.org/10.3389/fphys.2024.1253417"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Scout reports",
+  "activity": "Scouting & recruitment",
+  "modality": "Text",
+  "what": "Free-text assessments of players' technique, attitude and potential.",
+  "extract": "Recurring descriptors, scout bias, agreement between scouts.",
+  "build": "LLM search engine over scout reports.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Video scouting libraries",
+  "activity": "Scouting & recruitment",
+  "modality": "Video",
+  "what": "Clips of every action per player, indexed by event data.",
+  "extract": "Qualitative checks on stats, style fit, decision making.",
+  "build": "Player-to-player video similarity search.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Season player statistics",
+  "activity": "Scouting & recruitment",
+  "modality": "Tabular",
+  "what": "Aggregated per-90 stats per player and season across leagues.",
+  "extract": "Player profiles, percentile radars, similar-player search.",
+  "build": "Similarity search for replacement players.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "worldfootballR (FBref data)",
+    "url": "https://github.com/JaseZiv/worldfootballR"
+   },
+   {
+    "title": "European Soccer Database (Kaggle)",
+    "url": "https://www.kaggle.com/datasets/hugomathien/soccer"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Market values",
+  "activity": "Scouting & recruitment",
+  "modality": "Time series & sensors",
+  "what": "Crowd-estimated player valuations over time.",
+  "extract": "Value trajectories, age curves, over/under-priced players.",
+  "build": "Market value regression from performance stats.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "transfermarkt-datasets",
+    "url": "https://github.com/dcaribou/transfermarkt-datasets"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Transfer fees",
+  "activity": "Scouting & recruitment",
+  "modality": "Tabular",
+  "what": "Player, origin and destination club, fee, date, loan flag.",
+  "extract": "Spending by league, fee inflation, selling-club strategies.",
+  "build": "Fee predictor and transfer-market explorer.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "ewenme/transfers (Transfermarkt fees)",
+    "url": "https://github.com/ewenme/transfers"
+   },
+   {
+    "title": "transfermarkt-datasets",
+    "url": "https://github.com/dcaribou/transfermarkt-datasets"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Transfer network",
+  "activity": "Scouting & recruitment",
+  "modality": "Graph",
+  "what": "Clubs as nodes, player moves as weighted edges.",
+  "extract": "Exporting/importing clubs, talent pipelines, league hierarchy.",
+  "build": "Link prediction for likely next destination.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Liu et al., anatomy of the global football transfer network",
+    "url": "https://doi.org/10.1371/journal.pone.0156504"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Agent networks",
+  "activity": "Scouting & recruitment",
+  "modality": "Graph",
+  "what": "Links between agents, players, clubs and intermediary fees.",
+  "extract": "Agent influence, conflicts of interest, concentration of power.",
+  "build": "Agent-club influence graph explorer.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Player contracts",
+  "activity": "Scouting & recruitment",
+  "modality": "Text",
+  "what": "Contract documents: length, clauses, bonuses, release clauses.",
+  "extract": "Contract-expiry risk, bonus structures, sell-on exposure.",
+  "build": "Clause extractor from contract PDFs.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Player wages",
+  "activity": "Scouting & recruitment",
+  "modality": "Tabular",
+  "what": "Base salary and guaranteed compensation per player.",
+  "extract": "Wage efficiency, pay vs performance, wage inequality within squads.",
+  "build": "Wage-to-value efficiency ranking.",
+  "openness": "Open samples",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Player career graph",
+  "activity": "Scouting & recruitment",
+  "modality": "Graph",
+  "what": "Knowledge graph of players, clubs, dates, nationalities and teammates.",
+  "extract": "Career paths, teammate overlaps, migration patterns.",
+  "build": "Career-path recommender via graph embeddings.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Wikidata Query Service",
+    "url": "https://query.wikidata.org/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Player re-identification crops",
+  "activity": "Scouting & recruitment",
+  "modality": "Image",
+  "what": "Cropped images of the same players from different broadcast frames.",
+  "extract": "Identity embeddings robust to pose and lighting.",
+  "build": "Player re-ID model to auto-tag clips.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "SoccerNet re-identification",
+    "url": "https://github.com/SoccerNet/sn-reid"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Referee decisions and cards",
+  "activity": "Officiating",
+  "modality": "Tabular",
+  "what": "Fouls, yellow/red cards, penalties and referee name per match.",
+  "extract": "Referee strictness, home bias, card predictability.",
+  "build": "Card-count predictor per referee and fixture.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "football-data.co.uk (includes referee and card columns)",
+    "url": "https://www.football-data.co.uk/data.php"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "VAR review logs",
+  "activity": "Officiating",
+  "modality": "Text",
+  "what": "Incidents checked, reviewed, outcome, time taken, protocol category.",
+  "extract": "Overturn rates, review duration, consistency across leagues.",
+  "build": "VAR consistency dashboard.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "IFAB Laws of the Game documents (incl. VAR protocol)",
+    "url": "https://www.theifab.com/laws-of-the-game-documents/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Foul video clips (multi-view)",
+  "activity": "Officiating",
+  "modality": "Video",
+  "what": "Multi-angle clips of fouls with severity and type labels.",
+  "extract": "Foul classification, card severity, ambiguous-decision rates.",
+  "build": "Multi-view foul classifier (VAR assistant).",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "SoccerNet-MVFoul",
+    "url": "https://github.com/SoccerNet/sn-mvfoul"
+   },
+   {
+    "title": "VARS (CVPRW 2023)",
+    "url": "https://doi.org/10.1109/cvprw59228.2023.00537"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Referee communications audio",
+  "activity": "Officiating",
+  "modality": "Audio",
+  "what": "Radio between referee, assistants and VAR room.",
+  "extract": "Decision rationale, communication latency, clarity.",
+  "build": "Speech-to-text and decision timeline from ref audio.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Referee positioning and movement",
+  "activity": "Officiating",
+  "modality": "Spatial & tracking",
+  "what": "Tracking of the referee's position relative to play and incidents.",
+  "extract": "Viewing angle, distance to fouls, link with decision accuracy.",
+  "build": "Optimal referee-positioning model.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Weston et al., science and medicine applied to soccer refereeing",
+    "url": "https://doi.org/10.2165/11632360-000000000-00000"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Goal-line technology",
+  "activity": "Officiating",
+  "modality": "3D & pose",
+  "what": "Ball 3D position relative to goal line from 7 cameras per goal.",
+  "extract": "Binary goal decision with millimetre accuracy.",
+  "build": "Simulated goal-line decision from triangulation.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "FIFA Quality Programme: goal-line technology",
+    "url": "https://inside.fifa.com/innovation/standards/goal-line-technology"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Semi-automated offside lines",
+  "activity": "Officiating",
+  "modality": "3D & pose",
+  "what": "Limb positions of attackers/defenders and ball kick point.",
+  "extract": "Offside decisions and 3D visualisations for fans.",
+  "build": "Offside checker from pose and kick time.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "FIFA: semi-automated offside technology",
+    "url": "https://inside.fifa.com/media-releases/semi-automated-offside-technology-to-be-used-at-fifa-world-cup-2022-tm"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Crowd noise and referee bias",
+  "activity": "Officiating",
+  "modality": "Audio",
+  "what": "Crowd noise exposure while referees judge incidents; matches without fans.",
+  "extract": "Whether noise and crowds shift decisions to the home team.",
+  "build": "Ghost-games difference-in-differences analysis.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Nevill et al., crowd noise and refereeing decisions",
+    "url": "https://doi.org/10.1016/s1469-0292(01)00033-4"
+   },
+   {
+    "title": "Bryson et al., absent crowd and refereeing during Covid-19",
+    "url": "https://doi.org/10.1016/j.econlet.2020.109664"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Referee body cameras",
+  "activity": "Officiating",
+  "modality": "Video",
+  "what": "First-person video from a camera worn by the referee.",
+  "extract": "Referee's view at decisions; immersive broadcast angles.",
+  "build": "Decision review tool using referee point of view.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Laws of the Game",
+  "activity": "Officiating",
+  "modality": "Text",
+  "what": "Official rulebook text, amendments and interpretations.",
+  "extract": "Rule changes over time; question answering on laws.",
+  "build": "Laws-of-the-Game chatbot with citations.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "IFAB Laws of the Game documents",
+    "url": "https://www.theifab.com/laws-of-the-game-documents/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Doping control samples",
+  "activity": "Officiating",
+  "modality": "Biological",
+  "what": "Urine and blood samples tested for prohibited substances.",
+  "extract": "Adverse findings by sport and substance; testing coverage.",
+  "build": "Testing-coverage dashboard by federation.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "WADA anti-doping testing figures",
+    "url": "https://www.wada-ama.org/en/resources/anti-doping-stats"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Broadcast video",
+  "activity": "Broadcast & media",
+  "modality": "Video",
+  "what": "Full TV match feeds with camera switches and graphics.",
+  "extract": "Action spotting, camera type, highlight-worthy moments.",
+  "build": "Action spotting model (goals, cards, subs).",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "SoccerNet (broadcast videos and annotations)",
+    "url": "https://github.com/SoccerNet/SoccerNet"
+   },
+   {
+    "title": "SoccerNet action spotting",
+    "url": "https://github.com/SoccerNet/sn-spotting"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Camera calibration",
+  "activity": "Broadcast & media",
+  "modality": "Spatial & tracking",
+  "what": "Pitch line annotations and camera parameters per frame.",
+  "extract": "Mapping from pixels to pitch coordinates.",
+  "build": "Homography estimator for any broadcast frame.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "SoccerNet camera calibration",
+    "url": "https://github.com/SoccerNet/sn-calibration"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Game state from video",
+  "activity": "Broadcast & media",
+  "modality": "Spatial & tracking",
+  "what": "Player positions, roles, teams and jersey numbers reconstructed from video.",
+  "extract": "Minimap of the match from a single TV feed.",
+  "build": "End-to-end video-to-minimap pipeline.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "SoccerNet Game State Reconstruction",
+    "url": "https://github.com/SoccerNet/sn-gamestate"
+   },
+   {
+    "title": "SoccerNet tracking",
+    "url": "https://github.com/SoccerNet/sn-tracking"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Replays",
+  "activity": "Broadcast & media",
+  "modality": "Video",
+  "what": "Replay segments linked to the live action they show.",
+  "extract": "Which events get replayed; replay grounding to original moment.",
+  "build": "Replay detector and grounding model.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "SoccerNet (replay grounding task)",
+    "url": "https://github.com/SoccerNet/SoccerNet"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Highlights",
+  "activity": "Broadcast & media",
+  "modality": "Video",
+  "what": "Short edited clips of key moments.",
+  "extract": "Editorial choices; automatic summarisation targets.",
+  "build": "Automatic highlight generator.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "SoccerNet action spotting (basis for highlights)",
+    "url": "https://github.com/SoccerNet/sn-spotting"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Commentary audio",
+  "activity": "Broadcast & media",
+  "modality": "Audio",
+  "what": "Commentator speech track of broadcasts.",
+  "extract": "Excitement level, transcripts, event cues, multilingual style.",
+  "build": "Excitement detector and ASR-based event spotting.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "SoccerNet-Echoes (commentary ASR)",
+    "url": "https://github.com/SoccerNet/sn-echoes"
+   },
+   {
+    "title": "SoccerNet-Echoes paper",
+    "url": "https://doi.org/10.1109/ism63611.2024.00016"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Commentary text",
+  "activity": "Broadcast & media",
+  "modality": "Text",
+  "what": "Time-aligned live commentary sentences per match.",
+  "extract": "Language of events; training data for video captioning.",
+  "build": "Automatic live-commentary generator.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "SoccerNet dense video captioning",
+    "url": "https://github.com/SoccerNet/sn-caption"
+   },
+   {
+    "title": "MatchTime (aligned commentary dataset)",
+    "url": "https://github.com/jyrao/MatchTime"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Subtitles and captions",
+  "activity": "Broadcast & media",
+  "modality": "Text",
+  "what": "Closed captions of broadcasts with timestamps.",
+  "extract": "Searchable transcripts, accessibility quality, mention counts.",
+  "build": "Caption search engine for broadcasts.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Press conferences",
+  "activity": "Broadcast & media",
+  "modality": "Video",
+  "what": "Recorded pre/post-match press conferences.",
+  "extract": "Manager sentiment, evasiveness, injury hints, topic trends.",
+  "build": "Press-conference topic and sentiment tracker.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "Chattanooga FC post-match press conference (Wikimedia Commons, CC BY)",
+    "url": "https://commons.wikimedia.org/wiki/File:FULL_POST-MATCH_PRESS_CONFERENCE-_Alex_McGrath_(October_6,_2024).webm"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Player interviews",
+  "activity": "Broadcast & media",
+  "modality": "Text",
+  "what": "Transcripts of flash and post-match interviews.",
+  "extract": "Formulaic language, emotion after wins/losses.",
+  "build": "Cliche detector for post-match interviews.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Formulaic language in post-match football interviews",
+    "url": "https://doi.org/10.1558/jalpp.32814"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "News articles",
+  "activity": "Broadcast & media",
+  "modality": "Text",
+  "what": "Football news stories from global outlets.",
+  "extract": "Transfer rumours, injury news, coverage volume and tone.",
+  "build": "Transfer-rumour tracker with source reliability.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "GDELT Project (global news events)",
+    "url": "https://www.gdeltproject.org/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Jersey numbers and player IDs",
+  "activity": "Broadcast & media",
+  "modality": "Image",
+  "what": "Player crops labelled with visible shirt numbers.",
+  "extract": "Who is who in broadcast frames.",
+  "build": "Jersey-number recogniser.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "SoccerNet jersey number recognition",
+    "url": "https://github.com/SoccerNet/sn-jersey"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Pitch depth from broadcast",
+  "activity": "Broadcast & media",
+  "modality": "3D & pose",
+  "what": "Per-pixel depth maps and 3D reconstructions of broadcast frames.",
+  "extract": "3D player positions, AR replays, tabletop reconstructions.",
+  "build": "3D replay viewer from monocular video.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Soccer on your tabletop (code)",
+    "url": "https://github.com/krematas/soccerontable"
+   },
+   {
+    "title": "SoccerNet depth estimation",
+    "url": "https://github.com/SoccerNet/sn-depth"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "TV audiences",
+  "activity": "Broadcast & media",
+  "modality": "Tabular",
+  "what": "Viewers per match by country, channel and minute.",
+  "extract": "Demand drivers, outcome uncertainty effects, rights value.",
+  "build": "Audience forecast model for fixture scheduling.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Buraimo & Simmons, spectators, TV viewers and outcome uncertainty",
+    "url": "https://doi.org/10.1016/j.jeconbus.2008.10.002"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Sponsorship exposure (logos)",
+  "activity": "Broadcast & media",
+  "modality": "Image",
+  "what": "Detected sponsor logos per broadcast frame with size and duration.",
+  "extract": "Media value of sponsorship placements.",
+  "build": "Logo detector computing on-screen exposure time.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Soccer video summarization using logo detection",
+    "url": "https://doi.org/10.1109/icip.2009.5413649"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Streaming metrics",
+  "activity": "Broadcast & media",
+  "modality": "Time series & sensors",
+  "what": "Concurrent viewers, bitrate, buffering and drop-off per stream.",
+  "extract": "Engagement peaks, churn moments, quality of experience.",
+  "build": "Real-time anomaly detector for stream QoE.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Referee whistle and ball-kick sounds",
+  "activity": "Broadcast & media",
+  "modality": "Audio",
+  "what": "Short acoustic events in broadcast audio.",
+  "extract": "Timing of fouls, restarts and kicks.",
+  "build": "Whistle detector for automatic event tagging.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Automated referee whistle detection for highlights",
+    "url": "https://doi.org/10.5120/1729-2340"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Social media posts",
+  "activity": "Fans & community",
+  "modality": "Text",
+  "what": "Tweets, Reddit posts and comments mentioning clubs and players.",
+  "extract": "Sentiment, abuse and racism detection, reaction to events.",
+  "build": "Live fan-sentiment meter; abuse filter.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "FIFA World Cup 2022 tweets (Kaggle)",
+    "url": "https://www.kaggle.com/datasets/tirendazacademy/fifa-world-cup-2022-tweets"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Fan chants",
+  "activity": "Fans & community",
+  "modality": "Audio",
+  "what": "Recordings and lyrics of supporter songs.",
+  "extract": "Melody reuse, chant identity, intensity over a match.",
+  "build": "Chant recogniser (Shazam for terraces).",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Strasbourg supporters' chant (Wikimedia Commons)",
+    "url": "https://commons.wikimedia.org/wiki/File:Chants_des_supporters_du_RCS_sur_l%27air_de_Vive_le_vent_-_Supporters_du_RC_Strasbourg.ogg"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Crowd noise levels",
+  "activity": "Fans & community",
+  "modality": "Time series & sensors",
+  "what": "Decibel levels in the stands over the course of a match.",
+  "extract": "Atmosphere, home-crowd reactions, link to momentum.",
+  "build": "Crowd-excitement detector aligned to events.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Generalizing crowd noise effects in home advantage research",
+    "url": "https://doi.org/10.3389/fpsyg.2014.00532"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Wikipedia pageviews",
+  "activity": "Fans & community",
+  "modality": "Time series & sensors",
+  "what": "Daily page views per article and language.",
+  "extract": "Player and club popularity, attention spikes after events.",
+  "build": "Popularity tracker and transfer-buzz detector.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Pageviews tool",
+    "url": "https://pageviews.wmcloud.org/"
+   },
+   {
+    "title": "Wikimedia pageviews REST API (example query)",
+    "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Association_football/monthly/2024010100/2024123100"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Google Trends",
+  "activity": "Fans & community",
+  "modality": "Time series & sensors",
+  "what": "Relative search interest by term, region and time.",
+  "extract": "Global interest in clubs, tournaments, women's football growth.",
+  "build": "Search-interest map of football fandom.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "pytrends (unofficial Google Trends API)",
+    "url": "https://github.com/GeneralMills/pytrends"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Fan cardiovascular events",
+  "activity": "Fans & community",
+  "modality": "Biological",
+  "what": "Hospital admissions for heart events during big matches.",
+  "extract": "Health effects of match stress on spectators.",
+  "build": "Event-study of emergency admissions on match days.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "Wilbert-Lampen et al., cardiovascular events during World Cup soccer",
+    "url": "https://doi.org/10.1056/nejmoa0707427"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Fan follower networks",
+  "activity": "Fans & community",
+  "modality": "Graph",
+  "what": "Who follows which clubs, players and other fans online.",
+  "extract": "Fan communities, rivalries, global reach, bot clusters.",
+  "build": "Community detection on club follower graphs.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Fan geography",
+  "activity": "Fans & community",
+  "modality": "Spatial & tracking",
+  "what": "Locations of supporters, members and season-ticket holders.",
+  "extract": "Catchment areas, overlaps between rival clubs, travel to games.",
+  "build": "Fan-density map and new-supporter targeting.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Tifos and banners",
+  "activity": "Fans & community",
+  "modality": "Image",
+  "what": "Photos of choreographies, banners and flags in the stands.",
+  "extract": "Fan identity, political messages, choreography complexity.",
+  "build": "Banner text OCR and moderation tool.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "Wikimedia Commons: football supporters category",
+    "url": "https://commons.wikimedia.org/wiki/Category:Association_football_supporters"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Fan phone videos",
+  "activity": "Fans & community",
+  "modality": "Video",
+  "what": "User-filmed clips from the stands shared online.",
+  "extract": "Alternative angles, crowd behaviour, safety incidents.",
+  "build": "Crowd-crush risk detector from stand videos.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "Croatian supporters singing, Euro 2012 (Wikimedia Commons)",
+    "url": "https://commons.wikimedia.org/wiki/File:Croatian_supporters_singing_before_Croatia_-_Italy_match,_Pozna%C5%84,_June_14,_Euro_2012.ogv"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Club annual reports",
+  "activity": "Business & operations",
+  "modality": "Text",
+  "what": "Audited accounts: revenue lines, wages, debt, amortisation.",
+  "extract": "Financial health, wage/revenue ratio, sustainability compliance.",
+  "build": "Financial-distress early-warning model.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "UK Companies House (club filings)",
+    "url": "https://find-and-update.company-information.service.gov.uk/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Club revenue league tables",
+  "activity": "Business & operations",
+  "modality": "Tabular",
+  "what": "Revenue by club split into matchday, broadcast and commercial.",
+  "extract": "Revenue concentration, growth drivers, rich-club gap.",
+  "build": "Revenue vs league-position regression.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "Deloitte Football Money League",
+    "url": "https://www.deloitte.com/uk/en/services/financial-advisory/analysis/deloitte-football-money-league.html"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Ownership structures",
+  "activity": "Business & operations",
+  "modality": "Graph",
+  "what": "Owners, holding companies, stakes and multi-club groups.",
+  "extract": "Multi-club networks, state ownership, conflicts in competitions.",
+  "build": "Ownership graph explorer.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "Wikidata Query Service (owned-by relations)",
+    "url": "https://query.wikidata.org/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Ticketing and season tickets",
+  "activity": "Business & operations",
+  "modality": "Tabular",
+  "what": "Tickets sold per seat, price, buyer type and channel.",
+  "extract": "Price elasticity, no-show rates, churn of season-ticket holders.",
+  "build": "Season-ticket churn predictor.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Dynamic ticket prices",
+  "activity": "Business & operations",
+  "modality": "Time series & sensors",
+  "what": "Primary and resale prices over time before a match.",
+  "extract": "Demand by opponent and date, optimal pricing.",
+  "build": "Dynamic pricing simulator.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Dynamic ticket pricing and secondary market prices (J. Sport Management)",
+    "url": "https://doi.org/10.1123/jsm.26.6.532"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Attendance",
+  "activity": "Business & operations",
+  "modality": "Tabular",
+  "what": "Spectators per match and average attendance per club and season.",
+  "extract": "Demand trends, stadium utilisation, effects of form and weather.",
+  "build": "Attendance forecaster.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "European football attendances",
+    "url": "https://www.european-football-statistics.co.uk/attn.htm"
+   },
+   {
+    "title": "transfermarkt-datasets (games incl. attendance)",
+    "url": "https://github.com/dcaribou/transfermarkt-datasets"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Merchandise sales",
+  "activity": "Business & operations",
+  "modality": "Tabular",
+  "what": "Shirt and product sales by player name, size, region, channel.",
+  "extract": "Commercial value of signings, kit launch success.",
+  "build": "Demand forecast for a new kit.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Kit designs",
+  "activity": "Business & operations",
+  "modality": "Image",
+  "what": "Images of home/away kits, colours and sponsors by season.",
+  "extract": "Colour palettes, clash detection, design history.",
+  "build": "Kit-clash checker for referees and broadcasters.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Wikimedia Commons: football kit images",
+    "url": "https://commons.wikimedia.org/wiki/Category:Association_football_kits"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "App and website clickstream",
+  "activity": "Business & operations",
+  "modality": "Time series & sensors",
+  "what": "Sessions, clicks and purchases in club apps and sites.",
+  "extract": "Fan journeys, conversion funnels, content preferences.",
+  "build": "Personalised content recommender.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Sponsorship deals",
+  "activity": "Business & operations",
+  "modality": "Text",
+  "what": "Sponsor, category, term, value and activation rights.",
+  "extract": "Market rates by category and club tier.",
+  "build": "Sponsorship valuation benchmarker.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Weather",
+  "activity": "Stadium & environment",
+  "modality": "Time series & sensors",
+  "what": "Hourly temperature, humidity, wind and rain at the venue.",
+  "extract": "Effects of heat and rain on running, goals and injuries.",
+  "build": "Weather-adjusted performance model.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Open-Meteo historical weather API",
+    "url": "https://open-meteo.com/en/docs/historical-weather-api"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Pitch quality sensors",
+  "activity": "Stadium & environment",
+  "modality": "Time series & sensors",
+  "what": "Soil moisture, surface hardness, grass height and temperature.",
+  "extract": "Playability, injury-risk surfaces, maintenance needs.",
+  "build": "Pitch-maintenance scheduler.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "FIFA Quality Programme: football turf",
+    "url": "https://inside.fifa.com/innovation/standards/football-turf"
+   },
+   {
+    "title": "Analysis of soccer field surface hardness",
+    "url": "https://doi.org/10.17660/actahortic.2004.661.36"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Turf grass biology",
+  "activity": "Stadium & environment",
+  "modality": "Biological",
+  "what": "Grass species, root depth, disease and hybrid fibre content.",
+  "extract": "Pitch health and recovery after events.",
+  "build": "Turf-disease classifier from leaf samples.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Pitch and stadium imagery",
+  "activity": "Stadium & environment",
+  "modality": "Image",
+  "what": "Satellite and aerial images of pitches and stadiums.",
+  "extract": "Pitch locations, wear patterns, mowing stripes, new venues.",
+  "build": "Pitch detector on satellite imagery.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Copernicus Data Space (Sentinel-2)",
+    "url": "https://dataspace.copernicus.eu/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Stadium locations and geometry",
+  "activity": "Stadium & environment",
+  "modality": "Spatial & tracking",
+  "what": "Coordinates, capacity, footprint and stand layout of venues.",
+  "extract": "Travel distances, derby proximity, catchment population.",
+  "build": "Stadium map with away-travel calculator.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "OpenStreetMap tag leisure=stadium",
+    "url": "https://wiki.openstreetmap.org/wiki/Tag:leisure%3Dstadium"
+   },
+   {
+    "title": "Wikidata Query Service",
+    "url": "https://query.wikidata.org/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Air pollution",
+  "activity": "Stadium & environment",
+  "modality": "Time series & sensors",
+  "what": "PM, ozone and NO2 concentrations near venues.",
+  "extract": "Effects of air quality on player performance.",
+  "build": "Pollution-adjusted performance analysis.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Lichter et al., air pollution and professional soccer",
+    "url": "https://doi.org/10.1016/j.labeco.2017.06.002"
+   },
+   {
+    "title": "OpenAQ",
+    "url": "https://openaq.org/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Altitude and travel",
+  "activity": "Stadium & environment",
+  "modality": "Spatial & tracking",
+  "what": "Venue altitude, time zones and travel distances between fixtures.",
+  "extract": "Altitude and jet-lag effects on results.",
+  "build": "Travel-fatigue index for fixtures.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "McSharry, effect of altitude on international football results (BMJ)",
+    "url": "https://doi.org/10.1136/bmj.39393.451516.ad"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Schedule congestion",
+  "activity": "Stadium & environment",
+  "modality": "Tabular",
+  "what": "Fixture dates and rest days between matches per team.",
+  "extract": "Effects of short recovery on performance and injuries.",
+  "build": "Congestion-aware rotation planner.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Dupont et al., two matches a week, performance and injury",
+    "url": "https://doi.org/10.1177/0363546510361236"
+   },
+   {
+    "title": "openfootball fixtures",
+    "url": "https://github.com/openfootball/football.json"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Stadium IoT and operations",
+  "activity": "Stadium & environment",
+  "modality": "Time series & sensors",
+  "what": "Turnstile counts, Wi-Fi, concession sales, energy and water use.",
+  "extract": "Crowd flow, queue times, energy footprint.",
+  "build": "Turnstile crowd-flow forecaster.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Fantasy football data",
+  "activity": "Games, fantasy & betting",
+  "modality": "Tabular",
+  "what": "Player prices, points, ownership and fixtures from fantasy games.",
+  "extract": "Value picks, ownership herding, points prediction.",
+  "build": "Fantasy squad optimiser (integer programming).",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "FPL API bootstrap-static",
+    "url": "https://fantasy.premierleague.com/api/bootstrap-static/"
+   },
+   {
+    "title": "vaastav/Fantasy-Premier-League historical data",
+    "url": "https://github.com/vaastav/Fantasy-Premier-League"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Betting odds",
+  "activity": "Games, fantasy & betting",
+  "modality": "Tabular",
+  "what": "Opening and closing odds from many bookmakers per match.",
+  "extract": "Implied probabilities, market efficiency, bookmaker margins.",
+  "build": "Odds-calibrated match predictor.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "football-data.co.uk results and odds",
+    "url": "https://www.football-data.co.uk/data.php"
+   },
+   {
+    "title": "penaltyblog (models and odds tools)",
+    "url": "https://github.com/martineastwood/penaltyblog"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Betting exchange order books",
+  "activity": "Games, fantasy & betting",
+  "modality": "Time series & sensors",
+  "what": "In-play back/lay prices and matched volume over time.",
+  "extract": "Information flow, reaction to goals and red cards.",
+  "build": "In-play win-probability tracker from prices.",
+  "openness": "Open samples",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Video game player ratings",
+  "activity": "Games, fantasy & betting",
+  "modality": "Tabular",
+  "what": "EA FC attribute ratings (pace, shooting...) per player and edition.",
+  "extract": "Proxy scouting data, rating changes vs real form.",
+  "build": "Player-position classifier from game attributes.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "EA Sports FC 24 complete player dataset (Kaggle)",
+    "url": "https://www.kaggle.com/datasets/stefanoleone992/ea-sports-fc-24-complete-player-dataset"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Football Manager database",
+  "activity": "Games, fantasy & betting",
+  "modality": "Tabular",
+  "what": "Researcher-scouted attributes for hundreds of thousands of players.",
+  "extract": "Hidden potential, youth prospects, attribute profiles.",
+  "build": "Wonderkid finder.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Esports results",
+  "activity": "Games, fantasy & betting",
+  "modality": "Tabular",
+  "what": "EA FC esports matches, players and tournament results.",
+  "extract": "Player ratings, home advantage in esports, tactics meta.",
+  "build": "Esports Elo rating system.",
+  "openness": "Open",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Football simulators for RL",
+  "activity": "Games, fantasy & betting",
+  "modality": "Spatial & tracking",
+  "what": "Simulated game states, actions and rewards from physics-based engines.",
+  "extract": "Learned tactics, multi-agent coordination.",
+  "build": "Reinforcement-learning agent that learns to score.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Google Research Football",
+    "url": "https://github.com/google-research/football"
+   },
+   {
+    "title": "RoboCup Soccer Simulator server",
+    "url": "https://github.com/rcsoccersim/rcssserver"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Sticker albums",
+  "activity": "Games, fantasy & betting",
+  "modality": "Tabular",
+  "what": "Sticker checklists, rarity and pack contents.",
+  "extract": "Expected cost to complete, value of swapping.",
+  "build": "Coupon-collector simulator with friends swapping.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Trading coupons: completing the World Cup sticker album (Significance)",
+    "url": "https://doi.org/10.1111/j.1740-9713.2006.00192.x"
+   },
+   {
+    "title": "Cost to complete the FIFA World Cup 2026 sticker album",
+    "url": "https://doi.org/10.3390/app16157414"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Sticker and card images",
+  "activity": "Games, fantasy & betting",
+  "modality": "Image",
+  "what": "Scans of stickers and trading cards with player portraits.",
+  "extract": "Card condition, set recognition, collection cataloguing.",
+  "build": "Sticker recogniser that ticks off your album.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Video game motion capture",
+  "activity": "Games, fantasy & betting",
+  "modality": "3D & pose",
+  "what": "Mocap of real players used for game animations.",
+  "extract": "Realistic movement libraries; style transfer of signature moves.",
+  "build": "Animation retargeting from broadcast pose.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Prediction markets",
+  "activity": "Games, fantasy & betting",
+  "modality": "Time series & sensors",
+  "what": "Contract prices on match and tournament outcomes over time.",
+  "extract": "Crowd-sourced probabilities and their calibration.",
+  "build": "Calibration comparison: markets vs models.",
+  "openness": "Open samples",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Participation surveys",
+  "activity": "Grassroots & youth",
+  "modality": "Tabular",
+  "what": "Who plays football, how often, by age, gender and region.",
+  "extract": "Participation trends, drop-out, girls' football growth.",
+  "build": "Participation map for facility planning.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Sport England Active Lives data",
+    "url": "https://activelives.sportengland.org/"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Grassroots league results",
+  "activity": "Grassroots & youth",
+  "modality": "Tabular",
+  "what": "Fixtures, results and tables of amateur and youth leagues.",
+  "extract": "Competitive balance, mismatched scores, league health.",
+  "build": "Fairer youth league grouping algorithm.",
+  "openness": "Open",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Birthdates (relative age)",
+  "activity": "Grassroots & youth",
+  "modality": "Tabular",
+  "what": "Birth months of academy and national youth squad players.",
+  "extract": "Relative age effect in selection.",
+  "build": "Birth-quarter bias detector for academies.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "Helsen et al., relative age effect in youth soccer across Europe",
+    "url": "https://doi.org/10.1080/02640410400021310"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Biological maturation",
+  "activity": "Grassroots & youth",
+  "modality": "Biological",
+  "what": "Height, sitting height, parental height and skeletal age X-rays.",
+  "extract": "Maturity offset, early vs late developers, bio-banding.",
+  "build": "Bio-banding grouper using predicted adult height.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Skeletal age prediction models by maturity status in soccer players",
+    "url": "https://doi.org/10.1038/s41598-025-00402-x"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Amateur wearables",
+  "activity": "Grassroots & youth",
+  "modality": "Time series & sensors",
+  "what": "Consumer GPS watches and pods worn by amateurs.",
+  "extract": "Workload of recreational players; accessible match stats.",
+  "build": "Sunday-league stats app from a phone or watch.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Amateur match video (AI cameras)",
+  "activity": "Grassroots & youth",
+  "modality": "Video",
+  "what": "Auto-following panoramic camera recordings of youth and amateur matches.",
+  "extract": "Highlights, basic tracking and coaching clips for small clubs.",
+  "build": "Low-cost auto-highlight tool for youth clubs.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Pitches and facilities map",
+  "activity": "Grassroots & youth",
+  "modality": "Spatial & tracking",
+  "what": "Locations, surface type and lighting of public and club pitches.",
+  "extract": "Access gaps, facility deserts, booking demand.",
+  "build": "Pitch-finder and facility-gap map.",
+  "openness": "Open",
+  "examples": [
+   {
+    "title": "OpenStreetMap tag sport=soccer",
+    "url": "https://wiki.openstreetmap.org/wiki/Tag:sport%3Dsoccer"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Youth skill videos (pose)",
+  "activity": "Grassroots & youth",
+  "modality": "3D & pose",
+  "what": "Phone videos of drills analysed with 2D/3D pose estimation.",
+  "extract": "Technique scores, juggling counts, sprint and agility times.",
+  "build": "Phone app scoring dribbling drills via pose.",
+  "openness": "Mostly closed",
+  "examples": [],
+  "verified": false
+ },
+ {
+  "name": "Talent identification tests",
+  "activity": "Grassroots & youth",
+  "modality": "Tabular",
+  "what": "Sprint, agility, technical and game-based test scores in academies.",
+  "extract": "Predictors of making it to professional level.",
+  "build": "Talent-progression model with maturation adjustment.",
+  "openness": "Mostly closed",
+  "examples": [
+   {
+    "title": "Vestberg et al., executive functions in young elite soccer players",
+    "url": "https://doi.org/10.1371/journal.pone.0170845"
+   }
+  ],
+  "verified": true
+ },
+ {
+  "name": "Academy pathways",
+  "activity": "Grassroots & youth",
+  "modality": "Graph",
+  "what": "Player movements between youth clubs, academies and senior teams.",
+  "extract": "Which academies feed which clubs; pathway efficiency.",
+  "build": "Academy-to-pro pathway graph explorer.",
+  "openness": "Open samples",
+  "examples": [
+   {
+    "title": "transfermarkt-datasets (club and transfer records)",
+    "url": "https://github.com/dcaribou/transfermarkt-datasets"
+   }
+  ],
+  "verified": true
+ }
+]
