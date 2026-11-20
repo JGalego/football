@@ -28,8 +28,9 @@ from _progress import Progress, line_buffered  # sibling module in scripts/
 ROOT = Path(__file__).resolve().parents[1]
 
 # Wikimedia asks automated clients to identify themselves with contact details and rate-limits generic ones (HTTP 429).
-# Set FOOTBALL_USER_AGENT to something like "my-football-notebook/1.0 (https://example.org/contact)" if downloads get throttled.
-USER_AGENT = os.environ.get("FOOTBALL_USER_AGENT", "football-notebook/1.0 (open-source research notebook)")
+# Wikimedia throttles clients that do not identify themselves with a contact URL (HTTP 429), so the default names this repository.
+# Set FOOTBALL_USER_AGENT to something like "my-football-notebook/1.0 (https://example.org/contact)" if you fork it and downloads get throttled.
+USER_AGENT = os.environ.get("FOOTBALL_USER_AGENT", "football-notebook/1.0 (https://github.com/JGalego/football; open-source research notebook)")
 RAW = ROOT / "data" / "raw"
 
 SB = "https://raw.githubusercontent.com/statsbomb/open-data/master/data"
@@ -53,6 +54,8 @@ SB_COMPETITIONS = [
 ]
 
 
+MEDIA_OUTPUTS = ["match_photo.jpg", "crowd_frosinone.wav", "crowd_strasbourg.wav", "stand_clip.webm", "stand_clip_audio.wav",
+                 "match_report.webm", "stand_clip_frames.npz", "match_report_frames.npz"]  # what prepare_data.py makes from the Wikimedia files
 BYTES = [0]  # bytes downloaded so far (a list so worker threads can update it)
 _BYTES_LOCK = threading.Lock()
 
@@ -127,16 +130,28 @@ def main() -> None:
         jobs.append((f"{INTL}/{name}", RAW / "international" / name))
 
     # Wikimedia Commons files for the photo / audio / video demos (see public/media.json for licences).
-    # Fetched one at a time: Wikimedia rate-limits parallel clients.
+    # Fetched one at a time (Wikimedia rate-limits parallel clients), in a background thread so any waiting overlaps with the big
+    # download below: they are different hosts.
     media = json.loads((ROOT / "public" / "media.json").read_text())
-    print(f"Step 2: downloading {len(media)} media files from Wikimedia Commons (one at a time, politely) ...", flush=True)
-    for i, m in enumerate(media, 1):
-        before = BYTES[0]
-        got = fetch(m.get("download_url", m["file_url"]), RAW / "media" / m["raw_name"], retries=6)  # photos: the 1280 px thumbnail (Wikimedia throttles big originals)
-        print(f"  [{i}/{len(media)}] {m['raw_name']}: " + (f"ok, {(BYTES[0] - before) / 1e6:.1f} MB" if BYTES[0] > before else "already there" if got else "FAILED"), flush=True)
-        if not got:
-            print(f"  ! could not fetch {m['raw_name']}", file=sys.stderr)
-        time.sleep(2)
+    media_failed: list[str] = []
+
+    def download_media() -> None:
+        print(f"Media: downloading {len(media)} files from Wikimedia Commons in the background (one at a time, politely) ...", flush=True)
+        for i, m in enumerate(media, 1):
+            before = BYTES[0]
+            got = fetch(m.get("download_url", m["file_url"]), RAW / "media" / m["raw_name"], retries=6)  # photos: the 1280 px thumbnail (Wikimedia throttles big originals)
+            print(f"  media [{i}/{len(media)}] {m['raw_name']}: " + (f"ok, {(BYTES[0] - before) / 1e6:.1f} MB" if BYTES[0] > before else "already there" if got else "FAILED"), flush=True)
+            if not got:
+                media_failed.append(m["raw_name"])
+            time.sleep(2)
+
+    processed = [ROOT / "public" / "media" / f for f in MEDIA_OUTPUTS]
+    if all(f.exists() for f in processed):
+        print(f"Media: the {len(processed)} processed files are already in public/media, so Wikimedia is not needed.", flush=True)
+        media_thread = threading.Thread(target=lambda: None)
+    else:
+        media_thread = threading.Thread(target=download_media, daemon=True)
+    media_thread.start()
 
     todo = [j for j in jobs if not (j[1].exists() and j[1].stat().st_size > 0)]
     print(f"Step 3: {len(jobs):,} data files, {len(jobs) - len(todo):,} already downloaded, {len(todo):,} to fetch into {RAW} (8 at a time) ...", flush=True)
@@ -148,7 +163,10 @@ def main() -> None:
             ok.append(fut.result())
             progress.update(nbytes=0, note=futures[fut][1].name)
             progress.bytes = BYTES[0]  # fetch() counts the bytes; mirror them for the speed readout
+    media_thread.join()
     print(f"Done: {sum(ok)}/{len(ok)} files present, {BYTES[0] / 1e6:,.0f} MB downloaded this run.", flush=True)
+    if media_failed:
+        sys.exit(f"Could not download required media: {', '.join(media_failed)}. Wikimedia may be throttling; set FOOTBALL_USER_AGENT and retry.")
 
 
 if __name__ == "__main__":

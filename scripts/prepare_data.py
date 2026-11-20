@@ -525,11 +525,19 @@ def _gray_frames(src: Path, fps: int, w: int, h: int) -> np.ndarray:
     return np.frombuffer(raw, np.uint8).reshape(-1, h, w)
 
 
+MEDIA_OUTPUTS = ["match_photo.jpg", "crowd_frosinone.wav", "crowd_strasbourg.wav", "stand_clip.webm", "stand_clip_audio.wav",
+                 "match_report.webm", "stand_clip_frames.npz", "match_report_frames.npz"]
+
+
 def prepare_media() -> None:
     """Shrink the openly licensed Wikimedia Commons media (see public/media.json) into analysis-ready files. Needs ffmpeg and Pillow."""
     print("Media ...")
     out = OUT / "media"
     out.mkdir(exist_ok=True)
+    if not MEDIA_SRC.exists() and all((out / f).exists() for f in MEDIA_OUTPUTS):
+        # E.g. the Hugging Face build: Wikimedia throttles its servers, so the finished files are built on GitHub and shipped with the code.
+        print("  the processed files are already in public/media and the originals are not here: keeping them", flush=True)
+        return
     from PIL import Image
 
     photo = Image.open(MEDIA_SRC / "photo_france_japan_2012_1280.jpg").convert("RGB")

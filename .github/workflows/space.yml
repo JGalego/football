@@ -1,6 +1,6 @@
 name: Sync to the Hugging Face Space
 
-# Uploads this repository (tracked files only: no third-party row-level data) to the Space.
+# Uploads this repository (tracked files, plus the processed Wikimedia media built below; no third-party row-level data) to the Space.
 # The Space's Dockerfile then downloads the data inside the image build.
 # Needs a repository secret HF_TOKEN (a Hugging Face token with write access to the Space).
 on:
@@ -13,6 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Wikimedia throttles (HTTP 429) the servers that build Hugging Face Spaces, so the Space build stalled on the photo/audio/video
+      # downloads. GitHub's runners are not throttled (the Pages workflow does the same): build the finished files here and ship them
+      # with the code. The Space's Dockerfile then skips Wikimedia when public/media is already complete.
+      - uses: astral-sh/setup-uv@v5
+      - name: Build the Wikimedia media files
+        env:
+          UV_NO_DEV: "1"
+          FOOTBALL_USER_AGENT: football-notebook/1.0 (${{ github.server_url }}/${{ github.repository }})
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+          uv sync --frozen --no-dev
+          uv run python scripts/download_data.py --open-only
+          uv run python scripts/prepare_data.py media
       - name: Upload to the Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
@@ -23,6 +36,6 @@ jobs:
           pip install --quiet "huggingface_hub[hf_xet]"
           cp deploy/space/README.md README.md
           hf upload "$HF_SPACE" . . --repo-type space \
-            --exclude ".git/*" --exclude ".github/*" \
+            --exclude ".git/*" --exclude ".github/*" --exclude ".venv/*" --exclude "data/*" --exclude "**/__pycache__/*" \
             --delete "*" \
             --commit-message "Sync from GitHub ${GITHUB_SHA::7}"
