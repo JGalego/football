@@ -26,3 +26,4 @@ public/*
 # persistent results of the heavy models (rebuilt automatically)
 .cache/
 _site/
+_static/

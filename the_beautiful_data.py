@@ -29,6 +29,7 @@ with app.setup(hide_code=True):
     import io
     import json
     import math
+    import os
     import urllib.request
     from pathlib import Path
 
@@ -168,6 +169,20 @@ with app.setup(hide_code=True):
         if name.endswith(".gz"):
             raw = gzip.decompress(raw)
         return json.loads(raw)
+
+    # The pre-rendered static copy of the lite edition (built with FOOTBALL_STATIC=1) would otherwise embed every audio and video clip in the page
+    # (about 6 MB). There they point at the copies the interactive build ships under live/ and only load when played.
+    STATIC = bool(os.environ.get("FOOTBALL_STATIC"))
+
+    def media_video(path: str, width: int = 520):
+        if STATIC:
+            return mo.Html(f"<video src='live/public/{path}' controls preload='metadata' style='width:{width}px;max-width:100%;border-radius:8px'></video>")
+        return mo.video(load_bytes(path), width=width, rounded=True)
+
+    def media_audio(path: str, raw: bytes):
+        if STATIC:
+            return mo.Html(f"<audio src='live/public/{path}' controls preload='none' style='width:100%'></audio>")
+        return mo.audio(raw)
 
     @functools.cache
     def actions_for(comp: str) -> pd.DataFrame:
@@ -495,6 +510,16 @@ def _():
 
     **An interactive field guide to the beautiful game.**
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    # Only the pre-rendered static copy of the lite edition (built with FOOTBALL_STATIC=1) shows this; the interactive builds show nothing.
+    mo.callout(mo.md(
+        "**Fast static copy.** Charts and the animation are pre-rendered so this page opens instantly, but sliders, dropdowns and players are frozen. "
+        "[Open the interactive version](live/index.html) (it downloads Python into your browser and takes a minute or two to start)."),
+        kind="neutral") if STATIC else None
     return
 
 
@@ -1708,7 +1733,7 @@ def _(CROWD, crowd_pick):
     _dom = _fb[int(np.argmax(_db.mean(1)))]
     mo.vstack([
         mo.md("#### Sound → spectrogram"),
-        crowd_pick, mo.audio(_raw),
+        crowd_pick, media_audio(CROWD[crowd_pick.value], _raw),
         _fig,
         mo.hstack([mo.stat(f"{_loudest:.1f} s", label="loudest moment"), mo.stat(f"{_dom:.0f} Hz", label="strongest band (0–4 kHz)"), mo.stat(f"{np.percentile(_loud, 95) - np.percentile(_loud, 5):.0f} dB", label="loudness range (5th–95th percentile)", caption="small = compressed or constant singing")], widths="equal"),
         note("A spectrogram turns sound into a picture: time across, pitch up, energy as colour. The orange line is the spectral centroid, the 'brightness' of the sound. "
@@ -1755,7 +1780,7 @@ def _(CLIP_FPS, CLIP_FR, cut_thr):
         cut_thr,
         alt.layer(_line, _marks).properties(width=620, height=150, title=alt.Title(f"{len(_cuts)} cuts found", subtitle="Blue: how much the picture changes each frame. Orange: detected cuts")),
         mo.hstack(_tiles, wrap=True, justify="start", gap=0.6),
-        mo.accordion({"Watch the clip (48 s)": mo.video(load_bytes("media/match_report.webm"), width=520, rounded=True)}),
+        mo.accordion({"Watch the clip (48 s)": media_video("media/match_report.webm")}),
     ])
     return
 
@@ -1779,7 +1804,7 @@ def _(STAND_FPS, STAND_FR):
         mo.md("#### Video + sound → one clip, two signals"),
         mo.md("A phone clip from the stand at Latvia v Gibraltar: one continuous take, no cuts, so the cut detector above finds nothing. "
               "The same file carries a picture and a soundtrack, and each gives its own time series."),
-        mo.video(load_bytes("media/stand_clip.webm"), width=520, rounded=True),
+        media_video("media/stand_clip.webm"),
         alt.vconcat(_a, _b, spacing=4),
         mo.md(f"Correlation between motion and loudness in this clip: **{_r:+.2f}**. One clip proves nothing, but it shows how pictures and sound can be fused into features."),
     ])

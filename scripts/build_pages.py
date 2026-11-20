@@ -5,13 +5,16 @@ So this script does not export from the project folder, where `public/` may hold
 copy containing only an allowlist of open files, then exports that.
 
 Usage:
-    python scripts/build_pages.py --out _site            # WebAssembly site, ready for GitHub Pages
-    python scripts/build_pages.py --out _check --html    # run the lite notebook on the server and export static HTML (a smoke test)
+    python scripts/build_pages.py --out _site/live       # WebAssembly site: fully interactive, but the browser must download and boot Python (minutes)
+    python scripts/build_pages.py --out _static --html   # run the lite notebook on the server and export static HTML: opens instantly, not interactive
+
+The Pages workflow publishes the static page at the site root and the WebAssembly site under /live/.
 """
 
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import subprocess
 import sys
@@ -73,7 +76,9 @@ def main() -> None:
             cmd = [*marimo, "html", "--no-include-code", "the_beautiful_data.py", "-o", str(out / "index.html")]
         else:
             cmd = [*marimo, "html-wasm", "the_beautiful_data.py", "-o", str(out), "--mode", "run", "--no-show-code"]
-        subprocess.run(cmd, cwd=work, check=True)
+        # The static copy is told it is static (FOOTBALL_STATIC) so it can show a banner linking to the interactive build.
+        env = {**os.environ, "FOOTBALL_STATIC": "1"} if args.html else None
+        subprocess.run(cmd, cwd=work, check=True, env=env)
     leaked = [p.name for p in out.rglob("*") if p.is_file() and p.name.startswith(FORBIDDEN)]
     if leaked:
         sys.exit(f"refusing to publish: row-level files in the output: {leaked}")

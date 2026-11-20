@@ -34,8 +34,15 @@ jobs:
         run: uv run python scripts/download_data.py --open-only
       - name: Prepare the open files
         run: uv run python scripts/prepare_data.py international transfermarkt media
-      - name: Build the WebAssembly site
-        run: uv run python scripts/build_pages.py --out _site
+      # Two builds of the same lite notebook:
+      #  * the static copy (pre-rendered on the server) opens instantly and is what visitors land on;
+      #  * the WebAssembly build is fully interactive but has to download and boot Python in the browser (minutes), so it lives under /live/.
+      - name: Build the static copy (instant)
+        run: uv run python scripts/build_pages.py --out _static --html
+      - name: Build the interactive WebAssembly site
+        run: uv run python scripts/build_pages.py --out _site/live
+      - name: Assemble the site
+        run: cp _static/index.html _site/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
