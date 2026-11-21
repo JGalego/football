@@ -27,7 +27,6 @@ from _progress import Progress, line_buffered  # sibling module in scripts/
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# Wikimedia asks automated clients to identify themselves with contact details and rate-limits generic ones (HTTP 429).
 # Wikimedia throttles clients that do not identify themselves with a contact URL (HTTP 429), so the default names this repository.
 # Set FOOTBALL_USER_AGENT to something like "my-football-notebook/1.0 (https://example.org/contact)" if you fork it and downloads get throttled.
 USER_AGENT = os.environ.get("FOOTBALL_USER_AGENT", "football-notebook/1.0 (https://github.com/JGalego/football; open-source research notebook)")

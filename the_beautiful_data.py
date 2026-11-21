@@ -525,47 +525,156 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    # A wall of football history from GIPHY: one clip per facet of the game (a solo run, a turn, a free kick, an overhead kick, a title
-    # celebration, a saved shot, the fans, the women's game ...). Picked by hand, no repeats of the same point; labels follow Giphy's own titles.
-    # Each tile is Giphy's small animated "preview" rendition (12-49 KB), loaded lazily, and links to the clip on GIPHY. `prefers-reduced-motion`
-    # gets a still frame. No data or kernel work, so it also appears instantly on the static page.
-    _N, _M = 3, 5  # rows x columns of the wall (at most as many tiles as there are clips below)
-    _clips = [
-        ("dBCWoIHo1hT5Sdtqbn", "Maradona · World Cup"),
-        ("LOLLHXQqdFsovmckYm", "The Cruyff turn"),
-        ("H3B4p7StPqXsa7q5Xo", "Zidane"),
-        ("8Hxi8VpszCw5P9aokM", "Roberto Carlos, free kick"),
-        ("QBMrpkBiaOX90n3rbD", "Cafu lifts the World Cup"),
-        ("uVQN60ceUXCcsqv1xd", "Thierry Henry · Arsenal"),
-        ("24okY552tjzCwuGEM0", "Ronaldo's bicycle kick"),
-        ("SJGIKDvFojqn022kFU", "Spain, Iniesta · World Cup"),
-        ("ORjPQ0Fc43cp3hDzef", "Steven Gerrard · Champions League"),
-        ("Q5iZaB5yvxxSxjyIc1", "Zlatan · Sweden"),
-        ("l3UcicwEsOOan1Q2c", "Agüero · Manchester City"),
-        ("xT8qBcFZPJDJj8EkgM", "Iceland's fans · Euro 2016"),
-        ("sbY2KdJ5x80CF22Mno", "Messi dribbling"),
-        ("l41lPe02EuUXQ90GY", "USA · Women's World Cup"),
-        ("xUPGchvk1SVaExiT6M", "Neuer · Bayern"),
-    ]
-    _tiles = "".join(
-        f"<figure class='gw-f'><a class='gw-t' href='https://giphy.com/gifs/{gid}' target='_blank' rel='noopener noreferrer'>"
-        f"<picture><source media='(prefers-reduced-motion: reduce)' srcset='https://media.giphy.com/media/{gid}/200_s.gif'>"
-        f"<img src='https://media.giphy.com/media/{gid}/giphy-preview.gif' alt='Football GIF: {xml_escape(what)}' loading='lazy' decoding='async'></picture></a>"
-        f"<figcaption>{xml_escape(what)}</figcaption></figure>"
-        for gid, what in _clips[: _N * _M])
-    _css = f"""
-    .gw-grid{{display:grid;grid-template-columns:repeat({_M},minmax(0,1fr));gap:6px;max-width:560px;margin:6px 0 2px}}
-    .gw-f{{margin:0;position:relative}}
-    .gw-t{{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:8px;background:{C['fill']};border:1px solid {C['grid']}}}
-    .gw-t img{{display:block;width:100%;height:100%;object-fit:cover;transition:transform .25s ease}}
-    .gw-t:hover img{{transform:scale(1.06)}}
-    .gw-f figcaption{{position:absolute;left:1px;right:1px;bottom:1px;padding:16px 5px 4px;border-radius:0 0 7px 7px;font-size:.66em;line-height:1.2;color:#fff;
-        background:linear-gradient(transparent,rgba(0,0,0,.78));opacity:0;transition:opacity .18s ease;pointer-events:none}}
-    .gw-f:hover figcaption,.gw-f:focus-within figcaption{{opacity:1}}
-    @media (max-width:820px){{.gw-grid{{grid-template-columns:repeat(3,minmax(0,1fr))}}}}
-    @media (max-width:480px){{.gw-grid{{grid-template-columns:repeat(2,minmax(0,1fr))}}}}
-    """
-    mo.Html(f"<div><style>{_css}</style><div class='gw-grid'>{_tiles}</div></div>")
+    # An old television that plays football's greatest moments: public/greatest_moments.mp4, a reel cut by scripts/make_greatest_moments.py
+    # from "The Beauty of Football - Greatest Moments" (LeBreton, YouTube), with one WebVTT label per clip shown along the bottom of the screen.
+    # The set stays off, and the video isn't fetched, until someone presses power (or the screen); then it warms up through static and plays.
+    # ▶/❚❚ pauses, ■ stops and rewinds, power turns it off again. marimo doesn't run scripts inside mo.Html, so the set lives in an iframe's
+    # srcdoc. That iframe is outside marimo's service worker, which the server needs to hand out public/ files, so under `marimo run` the
+    # video goes through a marimo virtual file instead (the URL mo.video makes); the WebAssembly build and the static page are plain static
+    # sites and use the file in public/ (the static page the copy under live/). The labels are inlined. Sizes are in vw, i.e. fractions of
+    # the iframe's width, so the set scales as one piece.
+    import sys as _sys
+    import re as _re
+
+    _reel = ("live/" if STATIC else "") + "public/greatest_moments.mp4"
+    if not STATIC and _sys.platform != "emscripten":
+        _m = _re.search(r"src='([^']+)'", mo.video(load_bytes("greatest_moments.mp4")).text)
+        if _m and not _m.group(1).startswith("data:"):  # never inline 25 MB into the page
+            _reel = _m.group(1)
+
+    def _secs(t):
+        _h, _mi, _s = t.split(":")
+        return int(_h) * 3600 + int(_mi) * 60 + float(_s)
+
+    _cues = [[_secs(_a), _secs(_b), _txt.strip()] for _a, _b, _txt in
+             _re.findall(r"([\d:.]+) --> ([\d:.]+)\n(.+)", load_bytes("greatest_moments.vtt").decode("utf-8"))]
+    _tv = r"""<!doctype html><html><head><meta charset="utf-8"><style>
+    html,body{margin:0;height:100%;overflow:hidden;background:transparent;font-family:system-ui,sans-serif}
+    .cab{position:absolute;top:.6vw;left:2vw;width:96vw;box-sizing:border-box;padding:3.2vw;display:flex;gap:2.8vw;border-radius:3vw;
+      background:repeating-linear-gradient(97deg,rgba(255,255,255,.035) 0 .25vw,transparent .25vw 1.1vw),linear-gradient(160deg,#7a4e2a,#55331a 55%,#3d2411);
+      box-shadow:inset 0 .3vw .4vw rgba(255,255,255,.18),inset 0 -.5vw 1vw rgba(0,0,0,.45),0 1vw 1.6vw rgba(0,0,0,.35)}
+    .bezel{padding:1.8vw;border-radius:2.6vw;background:linear-gradient(150deg,#2b2b2e,#121214);box-shadow:inset 0 0 0 .25vw #3a3a3e,inset 0 .6vw 1vw rgba(0,0,0,.6)}
+    .screen{position:relative;width:69.2vw;height:38.925vw;border-radius:2.2vw/3vw;overflow:hidden;background:radial-gradient(ellipse at center,#1a1e1c,#070908 75%);cursor:pointer}
+    .pic{position:absolute;inset:0;visibility:hidden;background:#000}
+    .on .pic{visibility:visible;animation:crtOn .55s ease-out both}
+    .powering-off .pic{visibility:visible;animation:crtOff .4s ease-in both}
+    @keyframes crtOn{0%{transform:scale(0,.006);filter:brightness(6)}35%{transform:scale(1,.006);filter:brightness(6)}100%{transform:scale(1,1);filter:brightness(1)}}
+    @keyframes crtOff{0%{transform:scale(1,1);filter:brightness(1)}60%{transform:scale(1,.006);filter:brightness(5)}100%{transform:scale(0,.006);filter:brightness(9)}}
+    video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.12) contrast(1.05)}
+    #noise{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:0;transition:opacity .35s}
+    .static #noise{opacity:1}
+    .glass{position:absolute;inset:0;z-index:3;border-radius:inherit;pointer-events:none;
+      background:radial-gradient(ellipse at 28% 12%,rgba(255,255,255,.12),transparent 42%),repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px),
+        radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.55));box-shadow:inset 0 0 2.6vw rgba(0,0,0,.9)}
+    .hit{position:absolute;inset:0;z-index:6}
+    #hint{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:1vw;color:rgba(255,255,255,.3);font-size:2.2vw;letter-spacing:.15em;text-transform:uppercase}
+    .on #hint,.powering-off #hint{display:none}
+    #osd{position:absolute;z-index:5;top:2.4vw;left:3.2vw;right:3vw;color:#5dff8a;font:700 2.3vw/1.3 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;
+      text-shadow:0 0 .6vw rgba(93,255,138,.75),.15vw .15vw 0 #000;opacity:0;transition:opacity .25s;pointer-events:none}
+    #osd.show{opacity:1}
+    #cap{position:absolute;z-index:4;left:3.2vw;bottom:2.6vw;max-width:80%;padding:.5vw 1.2vw;border-left:.45vw solid #d9b46a;background:rgba(0,0,0,.62);
+      color:#fff;font-size:1.9vw;line-height:1.25;opacity:0;transform:translateY(.6vw);transition:opacity .3s,transform .3s;pointer-events:none}
+    .on #cap.show{opacity:1;transform:none}
+    #nosig{position:absolute;z-index:5;inset:0;display:none;align-items:center;justify-content:center;color:#ddd;font:700 2.6vw ui-monospace,monospace;letter-spacing:.2em}
+    .nosignal #nosig{display:flex}
+    .panel{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:1.6vw 0 .8vw;border-radius:1.6vw;
+      background:linear-gradient(180deg,#2f2f32,#1d1d20);box-shadow:inset 0 0 0 .2vw #3d3d42,inset 0 .5vw .8vw rgba(0,0,0,.5)}
+    .brand{color:#d9b46a;font:700 1.35vw/1 Georgia,serif;letter-spacing:.2em;text-shadow:0 .1vw 0 #000}
+    .knob{width:7.4vw;height:7.4vw;border-radius:50%;position:relative;background:radial-gradient(circle at 35% 30%,#f2f2f2,#9a9a9e 45%,#4a4a4f 75%);
+      box-shadow:0 .4vw .6vw rgba(0,0,0,.6),inset 0 -.3vw .4vw rgba(0,0,0,.35);transition:transform .6s cubic-bezier(.3,1.5,.5,1)}
+    .knob::after{content:"";position:absolute;left:50%;top:.7vw;width:.5vw;height:2.2vw;margin-left:-.25vw;border-radius:.25vw;background:#2a2a2d}
+    .on .knob{transform:rotate(130deg)}
+    .lbl{color:#9a9aa0;font-size:1.05vw;letter-spacing:.18em;text-transform:uppercase;margin-top:.5vw;text-align:center}
+    .grille{width:9.6vw;height:10vw;border-radius:.8vw;background:repeating-linear-gradient(0deg,#0e0e10 0 .55vw,#3a3a3f .55vw .9vw);box-shadow:inset 0 0 .6vw #000}
+    .row{display:flex;gap:1.2vw}
+    button{all:unset;box-sizing:border-box;cursor:pointer;width:4.6vw;height:4.6vw;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:radial-gradient(circle at 40% 30%,#4a4a50,#1c1c1f 70%);box-shadow:0 .35vw .5vw rgba(0,0,0,.6),inset 0 .15vw .2vw rgba(255,255,255,.18)}
+    button:active{transform:translateY(.15vw);box-shadow:0 .15vw .25vw rgba(0,0,0,.6)}
+    button:focus-visible{outline:.25vw solid #9fd3ff;outline-offset:.25vw}
+    button svg{width:45%;height:45%;fill:#e8e8ea}
+    #power{width:5.6vw;height:5.6vw;background:radial-gradient(circle at 40% 30%,#c0392b,#6e1a12 72%)}
+    .off-hint #power{animation:pulse 1.8s ease-in-out infinite}
+    @keyframes pulse{50%{box-shadow:0 .35vw .5vw rgba(0,0,0,.6),0 0 0 .7vw rgba(192,57,43,.25)}}
+    .pw{display:flex;align-items:center;gap:1.1vw}
+    #led{width:1vw;height:1vw;border-radius:50%;background:#e53b2c;box-shadow:0 0 .7vw #e53b2c}
+    .on #led{background:#39e66b;box-shadow:0 0 .8vw #39e66b}
+    #pp .i-pause,.playing #pp .i-play{display:none}
+    .playing #pp .i-pause{display:block}
+    .legs{position:absolute;top:48.5vw;left:0;right:0;height:6vw}
+    .legs i{position:absolute;top:0;width:2.2vw;height:6vw;border-radius:0 0 .6vw .6vw;background:linear-gradient(90deg,#3d2411,#5a3519 50%,#2e1a0c)}
+    .legs i:nth-child(1){left:12vw;transform:skewX(14deg)}.legs i:nth-child(2){right:12vw;transform:skewX(-14deg)}
+    @media (prefers-reduced-motion:reduce){.on .pic,.powering-off .pic{animation:none}.knob{transition:none}.off-hint #power{animation:none}}
+    </style></head><body class="off-hint">
+    <div class="legs"><i></i><i></i></div>
+    <div class="cab">
+      <div class="bezel"><div class="screen">
+        <div id="hint"><span>&#x23FB;</span><span>Press power</span></div>
+        <div class="pic"><video id="vid" preload="none" playsinline><source src="__REEL__" type="video/mp4"></video>
+          <canvas id="noise" width="160" height="90"></canvas></div>
+        <div id="nosig">NO SIGNAL</div><div id="cap"></div>
+        <div id="osd"></div><div class="glass"></div><div class="hit" id="hit" title="Play / pause"></div>
+      </div></div>
+      <div class="panel">
+        <div class="brand">GOAL&#xB7;VISION</div>
+        <div><div class="knob" aria-hidden="true"></div><div class="lbl">Channel</div></div>
+        <div class="grille" aria-hidden="true"></div>
+        <div><div class="row">
+          <button id="pp" aria-label="Play or pause"><svg class="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z"/></svg><svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4.5h4.2v15H6zM13.8 4.5H18v15h-4.2z"/></svg></button>
+          <button id="stop" aria-label="Stop"><svg viewBox="0 0 24 24"><path d="M5.5 5.5h13v13h-13z"/></svg></button>
+        </div><div class="lbl">Play &#xB7; Stop</div></div>
+        <div class="pw"><span id="led"></span><button id="power" aria-label="Power on or off" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M11 2h2v10h-2z"/><path d="M6.3 5.3l1.4 1.4A7 7 0 1 0 16.3 6.7l1.4-1.4A9 9 0 1 1 6.3 5.3z"/></svg></button></div>
+      </div>
+    </div>
+    <script>
+    (function(){
+      var body=document.body, $=function(id){return document.getElementById(id)}, v=$("vid"), on=false, osdTimer=null, warmTimer=null, rafId=null;
+      var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      function osd(text, stay){var el=$("osd");el.textContent=text;el.classList.add("show");clearTimeout(osdTimer);
+        if(!stay)osdTimer=setTimeout(function(){el.classList.remove("show")},1800);}
+      var cv=$("noise"), cx=cv.getContext("2d"), img=cx.createImageData(cv.width,cv.height);
+      function noiseFrame(){var d=img.data;for(var i=0;i<d.length;i+=4){var g=Math.random()*255|0;d[i]=d[i+1]=d[i+2]=g;d[i+3]=255;}
+        cx.putImageData(img,0,0);if(!reduce)rafId=requestAnimationFrame(noiseFrame);}
+      function staticOn(){body.classList.add("static");if(!rafId)noiseFrame();}
+      function staticOff(){body.classList.remove("static");cancelAnimationFrame(rafId);rafId=null;}
+      // Label of the clip on screen: [start s, end s, text], from public/greatest_moments.vtt.
+      var cues=__CUES__, shown=null;
+      v.addEventListener("timeupdate",function(){var t=v.currentTime, c=null;
+        for(var i=0;i<cues.length;i++){if(t>=cues[i][0]&&t<cues[i][1]){c=cues[i];break;}}
+        if(c===shown)return;shown=c;var el=$("cap");
+        if(c){el.textContent=c[2];el.classList.add("show");}else el.classList.remove("show");});
+      v.addEventListener("playing",function(){clearTimeout(warmTimer);staticOff();body.classList.add("playing");body.classList.remove("nosignal");});
+      v.addEventListener("pause",function(){body.classList.remove("playing");});
+      v.addEventListener("ended",function(){v.currentTime=0;osd("■ THE END",true);});
+      v.addEventListener("error",function(){staticOff();body.classList.add("nosignal");},true);
+      function play(){var p=v.play();if(p&&p.catch)p.catch(function(){staticOff();osd("PRESS ▶",true);});}
+      function power(){
+        on=!on;$("power").setAttribute("aria-pressed",String(on));
+        body.classList.remove("off-hint","powering-off");
+        if(on){body.classList.add("on");staticOn();osd("CH 1 · GREATEST MOMENTS");
+          clearTimeout(warmTimer);warmTimer=setTimeout(function(){if(on)play();},reduce?0:700);
+        }else{
+          clearTimeout(warmTimer);v.pause();
+          body.classList.remove("on","playing");void body.offsetWidth;body.classList.add("powering-off");
+          staticOff();$("osd").classList.remove("show");
+          setTimeout(function(){body.classList.remove("powering-off");},450);
+        }
+      }
+      function playPause(){
+        if(!on){power();return;}
+        if(v.paused){play();osd("▶ PLAY");}else{v.pause();osd("❚❚ PAUSE",true);}
+      }
+      function stop(){
+        if(!on)return;
+        v.pause();v.currentTime=0;osd("■ STOP",true);
+      }
+      $("power").onclick=power;$("pp").onclick=playPause;$("stop").onclick=stop;$("hit").onclick=playPause;
+    })();
+    </script></body></html>"""
+    _srcdoc = xml_escape(_tv.replace("__REEL__", _reel).replace("__CUES__", json.dumps(_cues, ensure_ascii=False)), {'"': "&quot;"})
+    mo.Html(
+        f"<iframe srcdoc=\"{_srcdoc}\" title=\"A television showing football's greatest moments\" allow=\"autoplay; fullscreen\" "
+        "style=\"display:block;width:100%;max-width:600px;aspect-ratio:100/55.5;border:0;margin:6px 0 2px;background:transparent\"></iframe>"
+    )
     return
 
 
@@ -606,17 +715,13 @@ def _():
     FINAL_LABEL = next(k for k, v in MATCH_OPTIONS.items() if v == FINAL_ID)
     return (
         COMPS,
-        COMP_ORDER,
-        FINAL_ID,
         FINAL_LABEL,
         MATCH_OPTIONS,
         PLAYER,
         TEAM,
         appearances,
         matches,
-        players,
         shots,
-        teams,
     )
 
 
@@ -823,7 +928,7 @@ def _():
     ).add_params(_pick)
     _txt = _base.mark_text(fontSize=11).encode(text="n:Q", color=alt.condition("datum.n >= 4", alt.value("#ffffff"), alt.value(C["ink"])))
     atlas_chart = mo.ui.altair_chart(alt.layer(_cells, _txt).properties(width=560, height=alt.Step(30)), chart_selection=False, legend_selection=False)
-    return ATLAS_ACT, ATLAS_MOD, atlas, atlas_chart
+    return atlas, atlas_chart
 
 
 @app.cell(hide_code=True)
@@ -1388,11 +1493,11 @@ def _(cam_pan, cam_tilt, cam_zoom):
     CAM_K, CAM_R = camera([cam_pan.value, cam_tilt.value, 0.0], cam_zoom.value)
     # Ground-plane homography: pitch (X, Y, 1) → image (u, v, 1)
     CAM_H_MAT = CAM_K @ np.column_stack([CAM_R[:, 0], CAM_R[:, 1], -CAM_R @ CAM_POS])
-    return CAM_H, CAM_H_MAT, CAM_K, CAM_POS, CAM_R, CAM_W, project
+    return CAM_H, CAM_H_MAT, CAM_K, CAM_R, CAM_W, project
 
 
 @app.cell(hide_code=True)
-def _(CAM_H, CAM_H_MAT, CAM_K, CAM_R, CAM_W, TRK_AWAY, TRK_HOME, project, trk, cam_time):
+def _(CAM_H, CAM_K, CAM_R, CAM_W, TRK_AWAY, TRK_HOME, cam_time, project, trk):
     # Pitch lines, densified so perspective bends them correctly at the image border
     _rows = []
     for _s, _seg in enumerate(PITCH_SEGS):
@@ -1434,7 +1539,20 @@ def _(CAM_H, CAM_H_MAT, CAM_K, CAM_R, CAM_W, TRK_AWAY, TRK_HOME, project, trk, c
 
 
 @app.cell(hide_code=True)
-def _(CAM_H, CAM_H_MAT, CAM_W, TRK_AWAY, TRK_HOME, cam_image, cam_pan, cam_tilt, cam_time, cam_zoom, trk):
+def _(
+    CAM_H,
+    CAM_H_MAT,
+    CAM_W,
+    TRK_AWAY,
+    TRK_HOME,
+    cam_grid,
+    cam_image,
+    cam_pan,
+    cam_tilt,
+    cam_time,
+    cam_zoom,
+    trk,
+):
     # Camera footprint: back-project the image corners through the inverse homography
     _Hinv = np.linalg.inv(CAM_H_MAT)
 
@@ -1698,7 +1816,7 @@ def _(STAND_FPS, STAND_FR):
               "The same file carries a picture and a soundtrack, and each gives its own time series."),
         media_video("media/stand_clip.webm"),
         alt.vconcat(_a, _b, spacing=4),
-        mo.md(f"Correlation between motion and loudness in this clip: **{_r:+.2f}**. One clip proves nothing, but it shows how pictures and sound can be fused into features."),
+        mo.md(f"Correlation between motion and loudness in this clip: **{_r:+.2f}**. One clip is not enough to establish a general relationship."),
     ])
     return
 
@@ -1717,7 +1835,7 @@ def _():
     ## 8 · 150 years of results
 
     The oldest and most open layer: **international results since 1872**, maintained by volunteers and released as CC0.
-    Even here there are patterns. Goals per game have fallen, and **home advantage** has shrunk.
+    Goals per game have fallen, and **home advantage** has shrunk.
     """)
     return
 
@@ -1938,7 +2056,7 @@ def _(shots, xg_scope):
         return xg_oof, xg_fitted
 
     xg_oof, xg_fitted = cached("xg", (xg_scope.value,), _train_xg)
-    return XG_MODELS, xg_X, xg_features, xg_fitted, xg_oof
+    return XG_MODELS, xg_features, xg_fitted, xg_oof
 
 
 @app.cell(hide_code=True)
@@ -1999,7 +2117,16 @@ def _(xg_body, xg_def, xg_features, xg_fitted, xg_model, xg_near, xg_press):
 
 
 @app.cell(hide_code=True)
-def _(shots, xg_body, xg_chart, xg_def, xg_model, xg_near, xg_press, xg_surface):
+def _(
+    shots,
+    xg_body,
+    xg_chart,
+    xg_def,
+    xg_model,
+    xg_near,
+    xg_press,
+    xg_surface,
+):
     _sel = picked(xg_chart, xg_surface)
     if len(_sel):
         _c = _sel.iloc[0]
@@ -2073,7 +2200,7 @@ def _(shots, xg_min_shots, xg_model, xg_oof):
 
 
 @app.cell
-def _(PLAYER, matches, shots, xg_model, xg_oof):
+def _(matches, shots, xg_model, xg_oof):
     shot_frames = read_csv("shot_frames.csv.gz")
     _d = shots.assign(ours=xg_oof[xg_model.value]).query("shot_type != 'Penalty' and period < 5 and shot_id in @shot_frames.shot_id")
     _m = matches.set_index("match_id")
@@ -2180,7 +2307,7 @@ def _(xt_comps):
     for _ in range(25):
         xt_hist.append(_s * _g + _m * (xt_T @ xt_hist[-1]))
     xt_grid = grid_cells(XT_NX, XT_NY).assign(cell=lambda d: d.i * XT_NY + d.j)
-    return XT_NX, XT_NY, xt_T, xt_actions, xt_cell, xt_grid, xt_hist
+    return xt_T, xt_actions, xt_cell, xt_grid, xt_hist
 
 
 @app.cell
@@ -2343,7 +2470,16 @@ def _():
 
 
 @app.cell(hide_code=True)
-def _(PLAYER, TEAM, appearances, vaep_actions, vaep_auc, vaep_min, xt_cell, xt_hist):
+def _(
+    PLAYER,
+    TEAM,
+    appearances,
+    vaep_actions,
+    vaep_auc,
+    vaep_min,
+    xt_cell,
+    xt_hist,
+):
     _mins = appearances[appearances.match_id.isin(vaep_actions.match_id.unique())].groupby("player_id").minutes.sum()
     _xtv = xt_hist[-1]
     _mv = vaep_actions[vaep_actions.type.isin(MOVE_TYPES) & (vaep_actions.result == 1)].dropna(subset=["ex"])
@@ -2504,7 +2640,19 @@ def _():
 
 
 @app.cell(hide_code=True)
-def _(TRK_AWAY, TRK_HOME, pc_influence, pc_model, pc_moment, pc_offset, pc_react, pc_spearman, pc_vmax, pc_voronoi, trk):
+def _(
+    TRK_AWAY,
+    TRK_HOME,
+    pc_influence,
+    pc_model,
+    pc_moment,
+    pc_offset,
+    pc_react,
+    pc_spearman,
+    pc_vmax,
+    pc_voronoi,
+    trk,
+):
     _f0 = pc_moment.value + int(round(pc_offset.value * 25))
     _k = int((trk.frame - _f0).abs().argmin())
     _r, _rb, _ra = trk.iloc[_k], trk.iloc[max(_k - 2, 0)], trk.iloc[min(_k + 2, len(trk) - 1)]
@@ -2810,7 +2958,7 @@ def _(FP_CORPORA, PLAYER, TEAM, appearances, fp_corpus, fp_min):
     fp_axes = {k: (" · ".join(_load[k].nsmallest(2).index), " · ".join(_load[k].nlargest(2).index), _pca.explained_variance_ratio_[i]) for i, k in enumerate(["pc1", "pc2"])}
     _default = next((n for n in ("Lionel Messi", "Aitana Bonmatí", "Luka Modrić") if n in set(fp_meta.name)), fp_meta.sort_values("minutes").name.iloc[-1])
     fp_player = mo.ui.dropdown(dict(sorted(zip(fp_meta.name + " · " + fp_meta.team, fp_meta.index))), value=f"{_default} · {fp_meta.set_index('name').loc[_default, 'team'] if _default in set(fp_meta.name) else ''}".strip(" ·"), searchable=True, label="Player")
-    return fp_axes, fp_meta, fp_player, fp_stats, fp_xy, fp_z
+    return fp_axes, fp_player, fp_stats, fp_xy, fp_z
 
 
 @app.cell(hide_code=True)
@@ -2948,13 +3096,13 @@ def _(elo_eval, elo_hfa, elo_hist, elo_k, elo_now, elo_teams, intl):
         mo.hstack([elo_teams, elo_k, elo_hfa], justify="start", gap=1),
         mo.hstack([_lines, _top_ch], align="start"),
         mo.hstack([_cal_ch, mo.vstack([mo.stat(f"{_acc:.0%}", label="winner called correctly", caption="decisive matches since 2000"),
-                                       note("A single number per team, updated after each match, already gets most results right and is well calibrated.")])], justify="start", gap=2, align="center"),
+                                       note("Accuracy excludes draws; the calibration plot counts them as half a win.")])], justify="start", gap=2, align="center"),
     ])
     return
 
 
 @app.cell
-def _(intl):
+def _():
     pois_years = mo.ui.slider(2, 8, value=4, step=1, label="Fit on the last N years", show_value=True)
     pois_decay = mo.ui.switch(value=True, label="Weight recent matches more (half-life 1.5 years)")
     return pois_decay, pois_years
@@ -3224,9 +3372,9 @@ def _():
     mo.md(r"""
     ## 19 · From data to words
 
-    Event data is already structured, so a few templates turn it into **commentary**. Large language models make it fluent;
-    the data keeps it honest. Below is a template-based commentary for the 2022 World Cup final, with each chance's xG.
-    Then comes the compact, *grounded* context you would hand an LLM instead of asking it to remember the game.
+    Event data is already structured, so a few templates turn it into **commentary**. Below is template-based commentary
+    for the 2022 World Cup final, with each chance's xG. The accompanying LLM prompt supplies match events as context
+    for generating commentary.
     """)
     return
 

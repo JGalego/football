@@ -29,6 +29,7 @@ ALLOW_FILES = [
     "intl_results.csv.gz", "intl_shootouts.csv",  # international results (CC0)
     "tm_age_curve.csv",  # Transfermarkt valuations by age (CC0, aggregated)
     "statsbomb-logo.png",  # attribution logo, if you added it from StatsBomb's media pack
+    "greatest_moments.mp4", "greatest_moments.vtt",  # the intro television's reel (scripts/make_greatest_moments.py)
 ]
 ALLOW_DIRS = ["media", "snapshots"]  # Wikimedia Commons derivatives (credited in the notebook) and static snapshots
 

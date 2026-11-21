@@ -244,7 +244,7 @@ def crop_ok(jpg: bytes) -> bool:
     """Second opinion on a finished crop: a modern face detector (YuNet) must find a clear, centred face.
 
     The classic Haar detector used for cropping sometimes locks onto a shirt, a knee or a trophy. A rejected player simply has no
-    photo (initials are shown). The check does not look at skin tone, only at whether a face is there.
+    photo (initials are shown).
     """
     if _yunet[0] is None:
         model = CACHE.parent / "models" / "yunet.onnx"
