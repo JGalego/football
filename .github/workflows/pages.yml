@@ -5,6 +5,19 @@ name: Deploy the lite edition to GitHub Pages
 on:
   push:
     branches: [main]
+    # Only what the lite build reads: README, Space, licence or local-only tooling changes do not change the published site.
+    # Run it by hand (workflow_dispatch) after adding a new build input here.
+    paths:
+      - the_beautiful_data.py
+      - head.html
+      - public/**
+      - scripts/_progress.py
+      - scripts/download_data.py
+      - scripts/prepare_data.py
+      - scripts/build_pages.py
+      - pyproject.toml
+      - uv.lock
+      - .github/workflows/pages.yml
   workflow_dispatch:
 
 permissions:

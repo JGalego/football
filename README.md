@@ -1,12 +1,18 @@
 # The Beautiful Data
 
+<p align="center">
+  <a href="https://jgalego.github.io/football"><img src="https://marimo.io/shield.svg" alt="Open in marimo"></a>
+  <a href="https://huggingface.co/spaces/jgalego/football"><img src="https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-sm.svg" alt="Open in Hugging Face Spaces"></a>
+  <img src="https://img.shields.io/badge/made_for-football_and_data_aficionados_⚽📊-2e7d32" alt="Made for football and data aficionados">
+  <img src="https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
+</p>
+
 <p align="center"><img src="assets/tv.gif" alt="A retro TV switching on and playing football's greatest moments" width="480"></p>
 
 An interactive [marimo](https://marimo.io) notebook to explore [the beautiful game](https://en.wikipedia.org/wiki/The_beautiful_game) through data: what gets recorded (results, events, 360 freeze frames, tracking, bodies, markets, images, sound, video, text), the models people build on it (xG, xT, VAEP, pitch control, ghost teams, passing networks, forecasting, game theory) and where the field is heading.
 
 Every model is built from scratch on public data.
-
-<p align="center"><img src="assets/tv.gif" alt="A retro TV switching on and playing football's greatest moments" width="480"></p>
 
 ## Try it online
 

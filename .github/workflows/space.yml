@@ -6,10 +6,23 @@ name: Sync to the Hugging Face Space
 on:
   push:
     branches: [main]
+    # The Space mirrors the tree, so skip only files it never uses: the GitHub README (the Space gets deploy/space/README.md),
+    # the README's images and the Pages workflow.
+    paths-ignore:
+      - README.md
+      - assets/**
+      - .github/workflows/pages.yml
   workflow_dispatch:
+
+# Each sync uploads the whole tree, so one queued run after the current one is enough; never cut an upload short.
+concurrency:
+  group: space
+  cancel-in-progress: false
 
 jobs:
   sync:
+    # The Space name and HF_TOKEN belong to this repository, so forks skip the sync.
+    if: github.repository == 'JGalego/football'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +49,6 @@ jobs:
           pip install --quiet "huggingface_hub[hf_xet]"
           cp deploy/space/README.md README.md
           hf upload "$HF_SPACE" . . --repo-type space \
-            --exclude ".git/*" --exclude ".github/*" --exclude ".venv/*" --exclude "data/*" --exclude "**/__pycache__/*" \
+            --exclude ".git/*" --exclude ".github/*" --exclude "assets/*" --exclude ".venv/*" --exclude "data/*" --exclude "**/__pycache__/*" \
             --delete "*" \
             --commit-message "Sync from GitHub ${GITHUB_SHA::7}"
