@@ -1,8 +1,12 @@
 # The Beautiful Data
 
+<p align="center"><img src="assets/tv.gif" alt="A retro TV switching on and playing football's greatest moments" width="480"></p>
+
 An interactive [marimo](https://marimo.io) notebook to explore [the beautiful game](https://en.wikipedia.org/wiki/The_beautiful_game) through data: what gets recorded (results, events, 360 freeze frames, tracking, bodies, markets, images, sound, video, text), the models people build on it (xG, xT, VAEP, pitch control, ghost teams, passing networks, forecasting, game theory) and where the field is heading.
 
 Every model is built from scratch on public data.
+
+<p align="center"><img src="assets/tv.gif" alt="A retro TV switching on and playing football's greatest moments" width="480"></p>
 
 ## Try it online
 

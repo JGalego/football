@@ -138,7 +138,10 @@ def main() -> None:
         print(f"Media: downloading {len(media)} files from Wikimedia Commons in the background (one at a time, politely) ...", flush=True)
         for i, m in enumerate(media, 1):
             before = BYTES[0]
-            got = fetch(m.get("download_url", m["file_url"]), RAW / "media" / m["raw_name"], retries=6)  # photos: the 1280 px thumbnail (Wikimedia throttles big originals)
+            # Prefer the smaller download_url (photos: the 1280 px thumbnail; videos: a 480p transcode), since Wikimedia throttles big
+            # originals. Transcodes can vanish while Commons regenerates them, so fall back to the original: prepare_data.py rescales it anyway.
+            urls = list(dict.fromkeys([m.get("download_url", m["file_url"]), m["file_url"]]))
+            got = any(fetch(u, RAW / "media" / m["raw_name"], retries=6) for u in urls)
             print(f"  media [{i}/{len(media)}] {m['raw_name']}: " + (f"ok, {(BYTES[0] - before) / 1e6:.1f} MB" if BYTES[0] > before else "already there" if got else "FAILED"), flush=True)
             if not got:
                 media_failed.append(m["raw_name"])
