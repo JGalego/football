@@ -29,3 +29,7 @@ public/*
 .cache/
 _site/
 _static/
+
+# slide-deck copy of the notebook and its layout, written by scripts/make_slides.py
+the_beautiful_data_slides.py
+layouts/

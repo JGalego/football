@@ -1,4 +1,4 @@
-# The Beautiful Data
+<h1 align="center">The Beautiful Data</h1>
 
 <p align="center">
   <a href="https://jgalego.github.io/football"><img src="https://marimo.io/shield.svg" alt="Open in marimo"></a>
